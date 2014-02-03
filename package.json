@@ -8,6 +8,7 @@
   "dependencies": {
     "JQDeferred": "~1.9.1",
     "firebase": "~1.0.1-npm",
-    "express": "3.4.8"
+    "express": "3.4.8",
+    "newrelic": "~1.3.1"
   }
 }
