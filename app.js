@@ -13,6 +13,8 @@ fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
         activities = F.child("activities"),
         activities_by_lifestyle = F.child("activities_by_lifestyle"),
         activities_by_desire    = F.child("activities_by_desire"),
+        activities_by_identity  = F.child("activities_by_identity"),
+        activities_by_city      = F.child("activities_by_city"),
         indexed = F.child("indexed");
 
    function index(key, data, indexref, tags, also_unindex){
@@ -24,12 +26,15 @@ fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
       if (also_unindex){
          // detect removed values
          indexed.child(index_name).child(key).once('value', function(snap){
-            var indexed_values = Object.keys(snap.val());
-            var removed_values = indexed_values.filter(function(x) { return tags.indexOf(x) < 0 });
-            removed_values.forEach(function(t){
-               indexref.child(t).child(key).remove();
-               indexed.child(index_name).child(key).child(t).remove();
-            });
+            var val = snap.val();
+            if (val){
+              var indexed_values = Object.keys(val);
+              var removed_values = indexed_values.filter(function(x) { return tags.indexOf(x) < 0 });
+              removed_values.forEach(function(t){
+                 indexref.child(t).child(key).remove();
+                 indexed.child(index_name).child(key).child(t).remove();
+              });              
+            }
          });
       }
    }
@@ -38,18 +43,24 @@ fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
       var key = snap.name(), data = snap.val();
       index(key, data, activities_by_desire, data.desires || [], false);
       index(key, data, activities_by_lifestyle, data.lifestyles || [], false);
+      index(key, data, activities_by_identity, data.identities || [], false);
+      index(key, data, activities_by_city, data.cities || [], false);
    });
 
    activities.on('child_changed', function(snap){
       var key = snap.name(), data = snap.val();
       index(key, data, activities_by_desire, data.desires || [], true);
       index(key, data, activities_by_lifestyle, data.lifestyles || [], true);
+      index(key, data, activities_by_identity, data.identities || [], true);
+      index(key, data, activities_by_city, data.cities || [], true);
    });
 
    activities.on('child_removed', function(snap){
       var key = snap.name();
       index(key, {}, activities_by_desire, [], true);
       index(key, {}, activities_by_lifestyle, [], true);
+      index(key, {}, activities_by_identity, [], true);
+      index(key, {}, activities_by_city, [], true);
       // itags.child(key).remove();
    });
 

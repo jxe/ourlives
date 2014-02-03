@@ -280,30 +280,331 @@
 }).apply(this, Function("return [this, function GeneratorFunction(){}]")());
 
 wrapGenerator.mark(play);
-var game, is_new, recent_id, recent_data, auto_add, option_type, fb_id, fb_user_id;
-var F = new Firebase('https://lifestyles.firebaseio.com');
+wrapGenerator.mark(ask_about_lifestyle);
+var game, auto_add;
 
 var auth = new FirebaseSimpleLogin(F, function(error, user) {
 	if (user){
-	  fb_user_id = user.uid;
-	  fb_id = user.id;
+	  firebase_user_id = user.uid;
+	  facebook_id = user.id;
 	  $('#login').hide();
 	}
 });
 
+function ask_about_lifestyle(lifestyle) {
+ return wrapGenerator(function ask_about_lifestyle$($ctx0) {
+  while (1) switch ($ctx0.next) {
+  case 0:
+   if (!(!lifestyle.has_lived || !lifestyle.has_lived[firebase_user_id])) {
+    $ctx0.next = 6;
+    break;
+   }
+
+   ask("How long did you live as a "+lifestyle.name+"?", 'lifestyle_timeframes');
+   $ctx0.next = 4;
+   return null;
+  case 4:
+   $ctx0.t0 = $ctx0.sent;
+   User.lived_lifestyle(lifestyle, $ctx0.t0);
+  case 6:
+  case "end":
+   return $ctx0.stop();
+  }
+ }, this);
+}
+
+function new_activity(name, time_desire, container, options){
+	if (!options) options = {};
+	options.name = name;
+	options.desires = [time_desire];
+	options[container.collection] = [container.id];
+	return F.child('activities').push(options).name();
+}
+
+function ensure_activity_in_container(activity, container){
+	var current_set = activity[container.collection] || [];
+	if (current_set.indexOf(container.id) < 0){
+		current_set.push(container.id);
+		var update_spec = {};
+		update_spec[container.collection] = current_set;
+		F.child('activities').child(activity.id).update(update_spec);
+	}
+}
+
+function play() {
+ var container, activity, activity_time_desire, activity_duration, would_do, other_container, better_activity, worse_activity, same_container, better_activity_lifestyle, better_activity_city, better_activity_identity;
+
+ return wrapGenerator(function play$($ctx1) {
+  while (1) switch ($ctx1.next) {
+  case 0:
+   if (!1) {
+    $ctx1.next = 95;
+    break;
+   }
+
+   // 1. pick or add a lifestyle
+
+   ask("Pick a lifestyle you've lived, a city you've lived in, or a thing you want to be:", ['lifestyles', 'cities', 'identities'], {auto_add: true});
+
+   $ctx1.next = 4;
+   return null;
+  case 4:
+   container = $ctx1.sent;
+
+   if (!(container.collection == 'lifestyles')) {
+    $ctx1.next = 7;
+    break;
+   }
+
+   return $ctx1.delegateYield(ask_about_lifestyle(container), "t1", 7);
+  case 7:
+   // 2. pick or add an activity
+
+   if (container.collection == 'lifestyles'){
+    Fireball.set('$lifestyle', container.id);
+    ask("Choose an activity that "+container.name+"s do:", ['activities_by_lifestyle', 'all_activities']);
+   } else if (container.collection == 'identities'){
+    Fireball.set('$identity', container.id);
+    ask("Choose an activity that people who are trying to be "+container.name+"s do:", ['activities_by_identity', 'all_activities']);
+   } else if (container.collection == 'cities'){
+    Fireball.set('$city', container.id);
+    ask("Choose an activity that people who live in "+container.name+"s do:", ['activities_by_city', 'all_activities']);
+   }
+
+   $ctx1.next = 10;
+   return null;
+  case 10:
+   activity = $ctx1.sent;
+
+   // add container if they choose one of the noncontainer set
+   ensure_activity_in_container(activity, container);
+
+   ask("When people do "+activity.name+", what are they looking for?", 'time_desires');
+   $ctx1.next = 15;
+   return null;
+  case 15:
+   activity_time_desire = $ctx1.sent;
+   Fireball.set('$desire', activity_time_desire);
+
+   if (!activity.is_new) {
+    $ctx1.next = 25;
+    break;
+   }
+
+   ask('How long does '+activity.name+' usually take?', 'activity_durations');
+   $ctx1.next = 21;
+   return null;
+  case 21:
+   activity_duration = $ctx1.sent;
+   activity.id = new_activity(activity.name, activity_time_desire, container, { takes: activity_duration });
+   $ctx1.next = 26;
+   break;
+  case 25:
+   if (activity.desires.indexOf(activity_time_desire) < 0){
+				activity.desires.push(activity_time_desire);
+				F.child('activities').child(activity.id).update({
+					desires: activity.desires
+				});
+			}
+  case 26:
+   ask("Would you do "+activity.name+" next week, if you could?", 'yes_or_no');
+   $ctx1.next = 29;
+   return null;
+  case 29:
+   would_do = $ctx1.sent;
+
+   User.would_do(activity.id, would_do)
+
+
+
+   // 3. get some add'l info about the activity;
+
+   if (!(container.collection != 'lifestyles')) {
+    $ctx1.next = 37;
+    break;
+   }
+
+   ask("Is there a name for the kind of person who does "+activity.name+"?", 'lifestyles', { escape_hatch: true, auto_add: true });
+   $ctx1.next = 35;
+   return null;
+  case 35:
+   other_container = $ctx1.sent;
+   if (other_container) ensure_activity_in_container(activity, other_container);
+  case 37:
+   if (!(container.collection != 'cities')) {
+    $ctx1.next = 43;
+    break;
+   }
+
+   ask("Is there a city in which a lot of people do "+activity.name+"?", 'cities', { escape_hatch: true, auto_add: true });
+   $ctx1.next = 41;
+   return null;
+  case 41:
+   other_container = $ctx1.sent;
+   if (other_container) ensure_activity_in_container(activity, other_container);
+  case 43:
+   if (!(container.collection != 'identities')) {
+    $ctx1.next = 49;
+    break;
+   }
+
+   ask("What are people trying to be when they do "+activity.name+"?", 'identities', { escape_hatch: true, auto_add: true });
+   $ctx1.next = 47;
+   return null;
+  case 47:
+   other_container = $ctx1.sent;
+   if (other_container) ensure_activity_in_container(activity, other_container);
+  case 49:
+   // 4. relate that activity to other activities
+
+   ask("For "+activity_time_desire+", pick an activity you like better than "+activity.name+":", 'activities_by_desire');
+
+   $ctx1.next = 52;
+   return null;
+  case 52:
+   better_activity = $ctx1.sent;
+
+   if (container.collection == 'lifestyles'){
+    ask("Pick an activity that "+container.name+"s do for "+activity_time_desire+" which you don't like as much as "+activity.name+":", ['activities_by_lifestyle', 'all_activities'], { escape_hatch: true});
+   } else if (container.collection == 'cities'){
+    ask("Pick an activity that people in "+container.name+"s do for "+activity_time_desire+" which you don't like as much as "+activity.name+":", ['activities_by_city', 'all_activities'], { escape_hatch: true});
+   } else if (container.collection == 'identities'){
+    ask("Pick an activity that people who want to be "+container.name+"s do for "+activity_time_desire+" which you don't like as much as "+activity.name+":", ['activities_by_identity', 'all_activities'], { escape_hatch: true});
+   }
+
+   $ctx1.next = 56;
+   return null;
+  case 56:
+   worse_activity = $ctx1.sent;
+
+   if (worse_activity && worse_activity.is_new){
+    worse_activity.id = new_activity(worse_activity.name, activity_time_desire, container);
+   } else if (worse_activity) {
+    ensure_activity_in_container(worse_activity, container);
+   }
+
+   if (!better_activity.is_new) {
+    $ctx1.next = 89;
+    break;
+   }
+
+   if (container.collection == 'lifestyles'){
+				ask('Is '  +better_activity.name+ ' also something that ' + container.name + 's do?', 'yes_or_no');
+			} else if (container.collection == 'cities'){
+				ask('Is '  +better_activity.name+ ' also something that people in ' + container.name + 's do?', 'yes_or_no');
+			} else {
+				ask('Is '  +better_activity.name+ ' also something that people who want to be ' + container.name + 's do?', 'yes_or_no');
+			}
+
+   $ctx1.next = 62;
+   return null;
+  case 62:
+   same_container = $ctx1.sent;
+
+   if (!(same_container == 'Yes')) {
+    $ctx1.next = 67;
+    break;
+   }
+
+   better_activity.id = new_activity(better_activity.name, activity_time_desire, container);
+   $ctx1.next = 89;
+   break;
+  case 67:
+   if (!(container.collection == 'lifestyles')) {
+    $ctx1.next = 75;
+    break;
+   }
+
+   ask("What lifestyle does " + better_activity.name  +"?", 'lifestyles', { auto_add: true });
+   $ctx1.next = 71;
+   return null;
+  case 71:
+   better_activity_lifestyle = $ctx1.sent;
+   better_activity.id = new_activity(better_activity.name, activity_time_desire, better_activity_lifestyle);
+   $ctx1.next = 89;
+   break;
+  case 75:
+   if (!(container.collection == 'cities')) {
+    $ctx1.next = 83;
+    break;
+   }
+
+   ask("What city do people do " + better_activity.name  +" in?", 'cities', { auto_add: true });
+   $ctx1.next = 79;
+   return null;
+  case 79:
+   better_activity_city = $ctx1.sent;
+   better_activity.id = new_activity(better_activity.name, activity_time_desire, better_activity_city);
+   $ctx1.next = 89;
+   break;
+  case 83:
+   if (!(container.collection == 'identities')) {
+    $ctx1.next = 89;
+    break;
+   }
+
+   ask("When people do " + better_activity.name  +" what are they trying to be?", 'identities', { auto_add: true });
+   $ctx1.next = 87;
+   return null;
+  case 87:
+   better_activity_identity = $ctx1.sent;
+   better_activity.id = new_activity(better_activity.name, activity_time_desire, better_activity_identity);
+  case 89:
+   if (better_activity.id){
+    User.thinks_x_is_better_than_y(better_activity, activity);
+    if (worse_activity) User.thinks_x_is_better_than_y(activity, worse_activity);			
+   }
+
+   // AND play again
+
+   ask("thank you! play again?", 'yes_or_no');
+
+   $ctx1.next = 93;
+   return null;
+  case 93:
+   $ctx1.next = 0;
+   break;
+  case 95:
+  case "end":
+   return $ctx1.stop();
+  }
+ }, this);
+}
+
 Fireball(F, {
+	init: function(){
+		game = play();
+		game.next();
+	},
+
 	map: {
 		"#lifestyles_list...": 'lifestyles',
+		"#identities_list...": 'identities',
+		"#cities_list...":     'cities',
 		"#activities_by_lifestyle_list...": 'activities_by_lifestyle/$lifestyle',
-		"#activities_by_desire_list...": 'activities_by_desire/$desire'
+		"#activities_by_identity_list...": 'activities_by_identity/$identity',
+		"#activities_by_city_list...": 'activities_by_city/$city',
+		"#activities_by_desire_list...": 'activities_by_desire/$desire',
+		"#all_activities_list...": 'activities'
+	},
+
+	calculated_fields: {
+		"#lifestyles_list how_many_lives": function(lifestyle){
+			if (!lifestyle.has_lived) return "";
+			if (lifestyle.has_lived[firebase_user_id]) return "You have lived this";
+			else return Object.keys(lifestyle.has_lived).length + " have lived this";
+		}
 	},
 
 	on_click: {
 		'#answers div a': function(a){
-			is_new = false;
-			recent_id = a.parentNode.id;
-			recent_data = a.parentNode.data;
-			game.next(a.innerText);
+			if (a.id == 'escape_hatch') return null;
+			var data = a.parentNode.data;
+			if (!data) return game.next(a.innerText);
+			data.is_new = false;
+			data.id = a.parentNode.id;
+			data.collection = a.parentNode.parentNode.parentNode.id;
+			game.next(data);
 		},
 		'#login': function(a){
 			auth.login('facebook', { rememberMe: true });
@@ -314,216 +615,19 @@ Fireball(F, {
 		'form': function(f){
 			var v = f.elements[0].value;
 			f.elements[0].value = '';
-			is_new = true;
-			recent_id = null;
-
-			if (auto_add && option_type == 'lifestyles'){
-				recent_id = F.child('lifestyles').push({name: v}).name();
+			var data = { name: v, is_new: true, collection: f.parentNode.id };
+			if (auto_add){
+				if (data.collection == 'lifestyles'){
+					data.id = F.child('lifestyles').push({ name: data.name }).name();
+				}
+				if (data.collection == 'identities'){
+					data.id = F.child('identities').push({ name: data.name }).name();
+				}
+				if (data.collection == 'cities'){
+					data.id = F.child('cities').push({ name: data.name }).name();
+				}
 			}
-
-			game.next(v);
+			game.next(data);
 		}
 	}
 });
-
-function ask(prompt, options, auto_add_setting, escape_hatch){
-	auto_add = auto_add_setting;
-	option_type = options;
-	$('#prompt').html(prompt);
-	$('#answers div').hide();
-	if (escape_hatch) $('#escape_hatch').show();
-	else $('#escape_hatch').hide();
-	if (options) $('#'+options).show();
-}
-
-function set_user_lived_lifestyle(lifestyle_id, length_of_time){
-	F.child('lifestyles').child(lifestyle_id).child('has_lived').child(fb_user_id).set({
-		fb_id: fb_id,
-		length_of_time: length_of_time
-	});
-}
-
-function set_user_would(activity_id, yes_or_no){
-	var would = (yes_or_no == "Yes" ? 'would' : 'wouldnot');
-	console.log('set_user_would', activity_id, yes_or_no, would);
-	F.child('activities').child(activity_id).child(would).child(fb_user_id).set({
-		fb_id: fb_id
-	});
-}
-
-function x_is_better_than_y(x, y, x_name, y_name){
-	F.child('activities').child(x).child('better_than').child(y).child(fb_user_id).set({
-		fb_id: fb_id,
-		than_name: y_name
-	});
-	F.child('activities').child(y).child('worse_than').child(x).child(fb_user_id).set({
-		fb_id: fb_id,
-		than_name: x_name
-	});
-}
-
-function show_fellow_travelers(lifestyle_data){
-	if (!lifestyle_data || !lifestyle_data.has_lived) return;
-	var keys = Object.keys(lifestyle_data.has_lived);
-	var msg = "<p>"+keys.length+" other people lived this: ";
-	keys.forEach(function(k){
-		msg += " <img src='https://graph.facebook.com/"+lifestyle_data.has_lived[k].fb_id+"/picture'>";
-	});
-
-	document.getElementById('tips').innerHTML += msg;
-}
-
-function play() {
- var lifestyle, lifestyle_id, lifestyle_timeframe, activity, activity_id, activity_is_new, activity_time_desire, activity_duration, would_do, better_activity, better_activity_id, better_activity_is_new, worse_activity, worse_activity_id, same_lifestyle, better_activity_lifestyle, better_activity_lifestyle_id;
-
- return wrapGenerator(function play$($ctx0) {
-  while (1) switch ($ctx0.next) {
-  case 0:
-   if (!1) {
-    $ctx0.next = 72;
-    break;
-   }
-
-   ask("Pick a lifestyle you've lived", 'lifestyles', true);
-   $ctx0.next = 4;
-   return null;
-  case 4:
-   lifestyle = $ctx0.sent;
-   lifestyle_id = recent_id;
-   Fireball.set('$lifestyle', lifestyle_id);
-   if (recent_data) show_fellow_travelers(recent_data);
-
-   if (!(!recent_data || !recent_data.has_lived || !recent_data.has_lived[fb_user_id])) {
-    $ctx0.next = 14;
-    break;
-   }
-
-   ask("How long did you live as a "+lifestyle+"?", 'lifestyle_timeframes');
-   $ctx0.next = 12;
-   return null;
-  case 12:
-   lifestyle_timeframe = $ctx0.sent;
-   set_user_lived_lifestyle(lifestyle_id, lifestyle_timeframe);
-  case 14:
-   ask("Choose an activity that "+lifestyle+"s do:", 'activities_by_lifestyle');
-   $ctx0.next = 17;
-   return null;
-  case 17:
-   activity = $ctx0.sent;
-   activity_id = recent_id;
-   activity_is_new = is_new;
-   ask("When people do "+activity+", what are they looking for?", 'time_desires');
-   $ctx0.next = 23;
-   return null;
-  case 23:
-   activity_time_desire = $ctx0.sent;
-   Fireball.set('$desire', activity_time_desire);
-
-   if (!activity_is_new) {
-    $ctx0.next = 33;
-    break;
-   }
-
-   ask('How long does '+activity+' usually take?', 'activity_durations');
-   $ctx0.next = 29;
-   return null;
-  case 29:
-   activity_duration = $ctx0.sent;
-
-   activity_id = F.child('activities').push({
-				name: activity,
-				lifestyles: [ lifestyle_id ],
-				desires: [ activity_time_desire ],
-				takes: activity_duration
-			}).name();
-
-   $ctx0.next = 33;
-   break;
-  case 33:
-   ask("Would you do "+activity+" next week, if you could?", 'yes_or_no');
-   $ctx0.next = 36;
-   return null;
-  case 36:
-   would_do = $ctx0.sent;
-   set_user_would(activity_id, would_do);
-   ask("For "+activity_time_desire+", pick an activity you like better than "+activity+":", 'activities_by_desire');
-   $ctx0.next = 41;
-   return null;
-  case 41:
-   better_activity = $ctx0.sent;
-   better_activity_id = recent_id;
-   better_activity_is_new = is_new;
-   ask("Pick an activity that "+lifestyle+"s do for "+activity_time_desire+" which you don't like as much as "+activity+":", 'activities_by_lifestyle', false, true);
-   $ctx0.next = 47;
-   return null;
-  case 47:
-   worse_activity = $ctx0.sent;
-   worse_activity_id = recent_id;
-
-   if (worse_activity != "Can't think of one" && is_new){
-    worse_activity_id = F.child('activities').push({
-     name: worse_activity,
-     lifestyles: [ lifestyle_id ],
-     desires: [ activity_time_desire ]
-    }).name();
-   }
-
-   if (!better_activity_is_new) {
-    $ctx0.next = 65;
-    break;
-   }
-
-   ask('Is '  +better_activity+ ' also something that ' + lifestyle + 's do?', 'yes_or_no');
-   $ctx0.next = 54;
-   return null;
-  case 54:
-   same_lifestyle = $ctx0.sent;
-
-   if (!(same_lifestyle == 'Yes')) {
-    $ctx0.next = 59;
-    break;
-   }
-
-   better_activity_id = F.child('activities').push({
-    name: better_activity,
-    lifestyles: [ lifestyle_id ],
-    desires: [ activity_time_desire ]
-   }).name();
-
-   $ctx0.next = 65;
-   break;
-  case 59:
-   ask("What lifestyle does " + better_activity  +"?", 'lifestyles', true);
-   $ctx0.next = 62;
-   return null;
-  case 62:
-   better_activity_lifestyle = $ctx0.sent;
-   better_activity_lifestyle_id = recent_id;
-
-   better_activity_id = F.child('activities').push({
-    name: better_activity,
-    lifestyles: [ better_activity_lifestyle_id ],
-    desires: [ activity_time_desire ]
-   }).name();
-  case 65:
-   x_is_better_than_y(better_activity_id, activity_id, better_activity, activity);
-
-   if (worse_activity != "Can't think of one"){
-    x_is_better_than_y(activity_id, worse_activity_id, activity, worse_activity);
-   }
-
-   ask("thank you! play again?", 'yes_or_no');
-   $ctx0.next = 70;
-   return null;
-  case 70:
-   $ctx0.next = 0;
-   break;
-  case 72:
-  case "end":
-   return $ctx0.stop();
-  }
- }, this);
-}
-
-game = play();
-game.next();

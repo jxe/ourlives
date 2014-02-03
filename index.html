@@ -1,62 +1,151 @@
 <a style="float:right" href="#" id="login">FB login</a>
-<h2 id="prompt"></h2>
-<div id="answers">
-	<div id="lifestyles">
-		<ul id="lifestyles_list">
-			<li><a data-set="text:name" href="#">Lifestyle 1</a></li>
-		</ul>
-		<form><input placeholder="other..."></form>
-	</div>
+<style>
 
-	<div id="activities_by_desire">
-		<ul id="activities_by_desire_list">
-			<li><a data-set="text:name" href="#">Activity 1</a></li>
-		</ul>
-		<form><input placeholder="other..."></form>
-	</div>
+.link {
+  stroke: #C02626;;
+  stroke-width: 0.5px;
+  marker-end: url(#triangle);
+}
 
-	<div id="activities_by_lifestyle">
-		<ul id="activities_by_lifestyle_list">
-			<li><a data-set="text:name" href="#">Activity 1</a></li>
-		</ul>
+.node text {
+  pointer-events: none;
+  font: 10px sans-serif;
+}
+
+circle {
+  stroke-width: 0.5px;
+  cursor: pointer;
+  fill: transparent;
+  stroke: #777 !important;
+}
+
+text {
+	fill: #4E4E4E;
+}
+
+</style>
+
+<div id="graph">
+	<svg>
+		<defs>
+	        <marker id="triangle"
+	                viewBox="0 -5 10 10" 
+	                refX="6"
+	                _refY="5"
+	                markerWidth="8" 
+	                markerHeight="8"
+	                orient="auto"
+	                >
+	            <path d="M0,-5L10,0L0,5" fill="#888" />
+		    </marker>
+	    </defs>
+	</svg>
+</div>
+
+
+
+<div id="game">
+	<h2 id="prompt"></h2>
+	<div id="answers">
+
+		<div id="lifestyles">
+			<ul id="lifestyles_list">
+				<li><a href="#">
+					<span data-set="text:name"></span>
+					<i data-set="text:how_many_lives"></i>
+				</a></li>
+			</ul>
+			<form><input placeholder="another lifestyle..."></form>
+		</div>
+
+		<div id="cities">
+			<ul id="cities_list">
+				<li><a href="#"><span data-set="text:name"></span></a></li>
+			</ul>
+			<form><input placeholder="another city..."></form>
+		</div>
+
+		<div id="identities">
+			<ul id="identities_list">
+				<li><a href="#"><span data-set="text:name"></span></a></li>
+			</ul>
+			<form><input placeholder="another identity..."></form>
+		</div>
+
+
+
+		<div id="activities_by_desire">
+			<ul id="activities_by_desire_list">
+				<li><a data-set="text:name" href="#">Activity 1</a></li>
+			</ul>
+			<form><input placeholder="other..."></form>
+		</div>
+
+		<div id="activities_by_city">
+			<ul id="activities_by_city_list">
+				<li><a data-set="text:name" href="#">Activity 1</a></li>
+			</ul>
+			<form><input placeholder="other..."></form>
+		</div>
+
+		<div id="activities_by_identity">
+			<ul id="activities_by_identity_list">
+				<li><a data-set="text:name" href="#">Activity 1</a></li>
+			</ul>
+			<form><input placeholder="other..."></form>
+		</div>
+
+		<div id="activities_by_lifestyle">
+			<ul id="activities_by_lifestyle_list">
+				<li><a data-set="text:name" href="#">Activity 1</a></li>
+			</ul>
+			<form><input placeholder="other..."></form>
+		</div>
+
 		<a id="escape_hatch" href="#">Can't think of one</a>
-		<form><input placeholder="other..."></form>
-	</div>
 
-	<div id="lifestyle_timeframes">
-		<li><a href="#">A few months</a></li>
-		<li><a href="#">A year</a></li>
-		<li><a href="#">Several years</a></li>
-	</div>
-	<div id="yes_or_no">
-		<li><a href="#">Yes</a></li>
-		<li><a href="#">No</a></li>
-	</div>
-	<div id="activity_durations">
-		<li><a href="#">10 minutes</a></li>
-		<li><a href="#">30 minutes</a></li>
-		<li><a href="#">an hour</a></li>
-		<li><a href="#">several hours</a></li>
-	</div>
-	<div id="time_desires">
-		<li><a href="#">Quiet time</a></li>
-		<li><a href="#">Quality time with friends</a></li>
-		<li><a href="#">Learning</a></li>
-		<li><a href="#">Creative projects</a></li>
-		<li><a href="#">Exercise</a></li>
-		<li><a href="#">Fresh air</a></li>
+		<div id="all_activities">
+			<ul id="all_activities_list">
+				<li><a data-set="text:name" href="#">Activity 1</a></li>
+			</ul>
+		</div>
+
+
+
+		<div id="lifestyle_timeframes">
+			<li><a href="#">A few months</a></li>
+			<li><a href="#">A year</a></li>
+			<li><a href="#">Several years</a></li>
+		</div>
+		<div id="yes_or_no">
+			<li><a href="#">Yes</a></li>
+			<li><a href="#">No</a></li>
+		</div>
+		<div id="activity_durations">
+			<li><a href="#">10 minutes</a></li>
+			<li><a href="#">30 minutes</a></li>
+			<li><a href="#">an hour</a></li>
+			<li><a href="#">several hours</a></li>
+		</div>
+		<div id="time_desires">
+			<li><a href="#">Quiet time</a></li>
+			<li><a href="#">Quality time with friends</a></li>
+			<li><a href="#">Learning</a></li>
+			<li><a href="#">Creative projects</a></li>
+			<li><a href="#">Exercise</a></li>
+			<li><a href="#">Fresh air</a></li>
+			<li><a href="#">Escaping routine</a></li>
+			<li><a href="#">Being of service</a></li>
+		</div>
 	</div>
 </div>
 
-<hr>
-<div id="tips">
-<h3>Tips</h3>
-</div>
-
-<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
-<script type='text/javascript'
-        src='https://cdn.firebase.com/js/simple-login/1.2.3/firebase-simple-login.js'>
-</script>
+<script src='https://cdn.firebase.com/v0/firebase.js'></script>
+<script src='https://cdn.firebase.com/js/simple-login/1.2.3/firebase-simple-login.js'></script>
 <script src="fireball.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/zepto/1.1.2/zepto.min.js"></script>
+<script src="db.js"></script>
+<script src="ui.js"></script>
 <script src="game-es5.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="graph.js"></script>
