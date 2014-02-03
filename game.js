@@ -73,14 +73,12 @@ function set_user_would(activity_id, yes_or_no){
 }
 
 function x_is_better_than_y(x, y, x_name, y_name){
-	F.child('activities').child(x).child('better_than').child(fb_user_id).set({
+	F.child('activities').child(x).child('better_than').child(y).child(fb_user_id).set({
 		fb_id: fb_id,
-		than: y,
 		than_name: y_name
 	});
-	F.child('activities').child(y).child('worse_than').child(fb_user_id).set({
+	F.child('activities').child(y).child('worse_than').child(x).child(fb_user_id).set({
 		fb_id: fb_id,
-		than: x,
 		than_name: x_name
 	});
 }
