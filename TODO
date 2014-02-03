@@ -1,4 +1,39 @@
+v0.1 -- slightly more exciting
+==============================
+- separate lifestyle name and city name and display both in the link
+- new lifestyle button switches to a two-input form
+- counts of people who've lived in each lifestyle using calculated field
+- sort lifestyles by city name
+- tips -> inventory
+- inventory is saved on the server side, by user id
+
+
+v0.2 -- first cut of the d3.js map
+==================================
+- three tabs:  game, inventory, map
+- d3.js
+- map loads all activities and builds better_than/worse_than edges
+
+
+v0.3 -- less embarassing code
+=============================
+- yield takes prompt and options and returns object with many attributes
+- firebase setters are factored out into their own database library
+
+
+v0.4 -- can replace sandbar
+===========================
+- add support for helpful links and images
+- add support for sand dock install
+
+
+v0.5 -- watering hole
+=====================
+- watering hole tab shows things that need work (don't have enough ratings, may need name changes, need helpful links or images)
+
+
+v0.6 -- ???
+===========================
 - keep a "better_count" and "worse_count"
-- sort lifestyles by name
 - sort activities_by_desire by better_count
 - sort activities_by_lifestyle by better_count also? or just compare count?
