@@ -111,6 +111,7 @@ function* play(){
 		ask("Choose an activity that "+lifestyle+"s do:", 'activities_by_lifestyle');
 		var activity = yield null;
 		var activity_id = recent_id;
+		var activity_data = recent_data;
 		var activity_is_new = is_new;
 
 		ask("When people do "+activity+", what are they looking for?", 'time_desires');
@@ -128,7 +129,12 @@ function* play(){
 				takes: activity_duration
 			}).name();
 		} else {
-			// TODO: add activity_time_desire to list of indexed desires if it's not there...
+			if (activity_data.desires.indexOf(activity_time_desire) < 0){
+				activity_data.desires.push(activity_time_desire);
+				F.child('activities').child(activity_id).update({
+					desires: activity_data.desires
+				});
+			}
 		}
 
 		ask("Would you do "+activity+" next week, if you could?", 'yes_or_no');

@@ -1,0 +1,4 @@
+- keep a "better_count" and "worse_count"
+- sort lifestyles by name
+- sort activities_by_desire by better_count
+- sort activities_by_lifestyle by better_count also? or just compare count?
