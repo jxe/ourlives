@@ -1,4 +1,4 @@
-var game, auto_add;
+var game, auto_add, info = {};
 var auth = new FirebaseSimpleLogin(F, function(error, user) {
 	if (user){
 	  firebase_user_id = user.uid;
@@ -38,12 +38,15 @@ function ensure_activity_in_container(activity, container){
 
 
 function* play(){
+
 	while(1){
+
+		info = {};
 
 		// 1. pick or add a lifestyle
 
 		ask("Pick a lifestyle you've lived, a city you've lived in, or a thing you want to be:", ['lifestyles', 'cities', 'identities'], {auto_add: true});
-		var container = yield null;
+		var container = info.container = yield null;
 
 		if (container.collection == 'lifestyles'){
 			yield *ask_about_lifestyle(container);
@@ -55,27 +58,27 @@ function* play(){
 
 		if (container.collection == 'lifestyles'){
 			Fireball.set('$lifestyle', container.id);
-			ask("Choose an activity that "+container.name+"s do:", ['activities_by_lifestyle', 'all_activities']);
+			ask("Choose an activity that %ns do:", ['activities_by_lifestyle', 'all_activities']);
 		} else if (container.collection == 'identities'){
 			Fireball.set('$identity', container.id);
-			ask("Choose an activity that people who are trying to be "+container.name+"s do:", ['activities_by_identity', 'all_activities']);
+			ask("Choose an activity that people who are trying to be %n do:", ['activities_by_identity', 'all_activities']);
 		} else if (container.collection == 'cities'){
 			Fireball.set('$city', container.id);
-			ask("Choose an activity that people who live in "+container.name+"s do:", ['activities_by_city', 'all_activities']);
+			ask("Choose an activity that people who live in %n do:", ['activities_by_city', 'all_activities']);
 		}
-		var activity = yield null;
+		var activity = info.activity = yield null;
 
 
 		// add container if they choose one of the noncontainer set
 		ensure_activity_in_container(activity, container);
 
 
-		ask("When people do "+activity.name+", what are they looking for?", 'time_desires');
-		var activity_time_desire = yield null;
+		ask("When people do %a, what are they looking for?", 'time_desires');
+		var activity_time_desire = info.desire = yield null;
 		Fireball.set('$desire', activity_time_desire);
 
 		if (activity.is_new){
-			ask('How long does '+activity.name+' usually take?', 'activity_durations');
+			ask('How long does %a usually take?', 'activity_durations');
 			var activity_duration = yield null;
 			activity.id = new_activity(activity.name, activity_time_desire, container, { takes: activity_duration });
 		} else {
@@ -87,7 +90,7 @@ function* play(){
 			}
 		}
 
-		ask("Would you do "+activity.name+" next week, if you could?", 'yes_or_no');
+		ask("Would you do %a next week, if you could?", 'yes_or_no');
 		var would_do = yield null;
 		User.would_do(activity.id, would_do)
 
@@ -96,18 +99,18 @@ function* play(){
 		// 3. get some add'l info about the activity
 
 		if (container.collection != 'lifestyles'){
-			ask("Is there a name for the kind of person who does "+activity.name+"?", 'lifestyles', { escape_hatch: true, auto_add: true });
+			ask("Is there a name for the kind of person who does %a?", 'lifestyles', { escape_hatch: true, auto_add: true });
 			var other_container = yield null;
 			if (other_container) ensure_activity_in_container(activity, other_container);
 		}
 		if (container.collection != 'cities'){
-			ask("Is there a city in which a lot of people do "+activity.name+"?", 'cities', { escape_hatch: true, auto_add: true });
+			ask("Is there a city where many people do %a?", 'cities', { escape_hatch: true, auto_add: true });
 			var other_container = yield null;
 			if (other_container) ensure_activity_in_container(activity, other_container);
 		}
 
 		if (container.collection != 'identities'){
-			ask("What are people trying to be when they do "+activity.name+"?", 'identities', { escape_hatch: true, auto_add: true });
+			ask("What are people trying to be when they do %a?", 'identities', { escape_hatch: true, auto_add: true });
 			var other_container = yield null;
 			if (other_container) ensure_activity_in_container(activity, other_container);
 		}
@@ -117,16 +120,16 @@ function* play(){
 
 		// 4. relate that activity to other activities
 
-		ask("For "+activity_time_desire+", pick an activity you like better than "+activity.name+":", 'activities_by_desire');
+		ask("For %d, pick an activity you like better than %a:", 'activities_by_desire');
 		var better_activity = yield null;
 
 
 		if (container.collection == 'lifestyles'){
-			ask("Pick an activity that "+container.name+"s do for "+activity_time_desire+" which you don't like as much as "+activity.name+":", ['activities_by_lifestyle', 'all_activities'], { escape_hatch: true});
+			ask("Choose an activity you don't like as much as %a, but that %ns do for %d:", ['activities_by_lifestyle', 'all_activities'], { escape_hatch: true});
 		} else if (container.collection == 'cities'){
-			ask("Pick an activity that people in "+container.name+"s do for "+activity_time_desire+" which you don't like as much as "+activity.name+":", ['activities_by_city', 'all_activities'], { escape_hatch: true});
-		} else if (container.collection == 'identities'){
-			ask("Pick an activity that people who want to be "+container.name+"s do for "+activity_time_desire+" which you don't like as much as "+activity.name+":", ['activities_by_identity', 'all_activities'], { escape_hatch: true});
+			ask("Choose an activity you don't like as much as %a, but that people in %n do for %d:", ['activities_by_city', 'all_activities'], { escape_hatch: true});
+		} else if (container.collection == 'identities'){			
+			ask("Choose an activity you don't like as much as %a, but that people who want to be %n do for %d:", ['activities_by_identity', 'all_activities'], { escape_hatch: true});
 		}
 		var worse_activity = yield null;
 		if (worse_activity && worse_activity.is_new){
@@ -137,11 +140,11 @@ function* play(){
 
 		if (better_activity.is_new){
 			if (container.collection == 'lifestyles'){
-				ask('Is '  +better_activity.name+ ' also something that ' + container.name + 's do?', 'yes_or_no');
+				ask('Is '  +better_activity.name+ ' also something that %ns do?', 'yes_or_no');
 			} else if (container.collection == 'cities'){
-				ask('Is '  +better_activity.name+ ' also something that people in ' + container.name + 's do?', 'yes_or_no');
+				ask('Is '  +better_activity.name+ ' also something that people in %n do?', 'yes_or_no');
 			} else {
-				ask('Is '  +better_activity.name+ ' also something that people who want to be ' + container.name + 's do?', 'yes_or_no');
+				ask('Is '  +better_activity.name+ ' also something that people who want to be %n do?', 'yes_or_no');
 			}
 			var same_container = yield null;
 
