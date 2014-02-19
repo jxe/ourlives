@@ -17,18 +17,21 @@ function fb(){
 $('#login').on('click', function(){ auth.login('facebook', { rememberMe: true }); });
 
 
-// set up page revealer
 
-var previous_widgets;
+
+// set up lil page revealer
+
 function reveal(page, firewidgets){
 	$('.page').hide();
 	$('#'+page).show();
-	if (previous_widgets) firewidget.close(previous_widgets);
-	previous_widgets = firewidget(firewidgets);
+	if (!firewidgets) return;
+	firewidget.close();
+	firewidget(firewidgets);
 }
 
 $('#goto_lifestyles_index').click(lifestyles_index);
 $('#goto_activities_index').click(activities_index);
+$('#goto_activities_graph').click(goto_activities_graph);
 
 
 
@@ -88,6 +91,7 @@ function activity_detail(aid, name){
 	reveal('activity', {
 		activity_name: name,
 		activity_would: fb('users/'+firebase_user_id+'/activities/'+aid+'/would'),
+		activity_takes: fb('activities/'+aid+'/takes'),
 		activity_time_desire: [fb('users/'+firebase_user_id+'/activities/'+aid+'/desire'), function(value){
 			if (!value) return;
 			$('#relative_preferences').show();

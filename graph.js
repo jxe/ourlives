@@ -1,14 +1,5 @@
-function values(obj){
-	return Object.keys(obj).map(function(x){ obj[x].id = x; return obj[x]; });
-}
-
-
-var width = 960,
-    height = 500;
-
+var width = 960, height = 500;
 var svg = d3.select("svg").attr("width", width).attr("height", height);
-
-
 
 var force = d3.layout.force()
     .gravity(.06)
@@ -55,17 +46,21 @@ function make_node(new_node){
         .attr("dx", 12)
         .attr("dy", ".35em")
         .text(function(d) { return d.name });
-    new_node.append("text")
-        .attr("class", "info")
-        .attr("dx", 12)
-        .attr("dy", "1.35em")
-        .text(function(d) { return d.desires.join('/'); }); // + ' ' + (d.lifestyles||[]).join(',');
+    // new_node.append("text")
+    //     .attr("class", "info")
+    //     .attr("dx", 12)
+    //     .attr("dy", "1.35em")
+    //     .text(function(d) { return d.desires.join('/'); }); // + ' ' + (d.lifestyles||[]).join(',');
 };
 
 
 
-F.child('activities').on('value', function(snap) {
-	var got_nodes = snap.val();
+function goto_activities_graph(){
+    reveal('graph');
+    F.child('activities').once('value', function(snap) { build_activities_graph(snap.val()); });
+}
+
+function build_activities_graph(got_nodes){
 	for (var node_id in got_nodes){
 		var n = got_nodes[node_id];
 		if (!nodes_by_id[node_id]){
@@ -75,18 +70,38 @@ F.child('activities').on('value', function(snap) {
 		}
 	}
 
-	for (var node_id in got_nodes){
-		var n = got_nodes[node_id];
-		if (n.better_than){
-			Object.keys(n.better_than).forEach(function(better_node_id){
-				var link_id = (n.id + "::" + better_node_id);
-				if (!links_by_id[link_id] && nodes_by_id[better_node_id]){
-					links_by_id[link_id] = { id: link_id, target: n, source: nodes_by_id[better_node_id] };
-					links.push(links_by_id[link_id]);
-				}
+	for (var node_id in nodes_by_id){
+		var n = nodes_by_id[node_id];
+		if (n.preferred){
+			Object.keys(n.preferred).forEach(function(desire){
+                Object.keys(n.preferred[desire]).forEach(function(better_activity_id){
+                    var left, right;
+                    if (better_activity_id > node_id){ left = node_id; right = better_activity_id }
+                    else { left = better_activity_id; right = node_id };
+
+                    var link_id = left + '::' + right;
+                    var l = links_by_id[link_id];
+                    if (!l){
+                        l = links_by_id[link_id] = { id: link_id, left: left, right: right, left_better_count: 0, right_better_count: 0 };
+                        links.push(l);
+                    }
+
+                    if (better_activity_id == left) l.left_better_count += 1;
+                    else l.right_better_count += 1;
+
+                    if (l.left_better_count > l.right_better_count){
+                        l.source = nodes_by_id[l.right];
+                        l.target = nodes_by_id[l.left];
+                    } else {
+                        l.source = nodes_by_id[l.left];
+                        l.target = nodes_by_id[l.right];
+                    }
+                });
 			});
 		}
 	}
+
+    console.log(links);
 
     link.data(links, function(l){ return l.id; })
       .enter().append("path")
@@ -98,4 +113,4 @@ F.child('activities').on('value', function(snap) {
         .call(make_node);
   
     force.start();
-});
+};

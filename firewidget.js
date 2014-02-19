@@ -1,9 +1,55 @@
 // firewidget.js
 
-function values(obj){
-	if (!obj) return [];
-	return Object.keys(obj).map(function(x){ obj[x].id = x; return obj[x]; });
-}
+
+
+
+// tinywidgets
+
+
+window.firewidget = (function(){
+	var subs = {};
+	function sub(ref, ev, f){ 
+		if (!subs[sub_scope]) subs[sub_scope] = []; 
+		subs[sub_scope].push(function(){ ref.off(ev,f); });
+		ref.on(ev, f); 
+	}
+	function unsub(scope){
+		if (!scope) Object.keys(subs).forEach(function(s){ unsub(s); });
+		if (!subs[scope]) return;
+		subs[scope].forEach(function(sub){ sub(); });
+		delete subs[scope];
+	}
+	function firewidget(a, b){
+		if (!b) { for (var x in a) firewidget(x, a[x]); return; }
+		if (a.trim) {
+			unsub(sub_scope = a);
+			a = document.getElementById(a) || document.querySelector(a) || alert(a + " not found.");
+		}
+		if (!b.sort) b = [b];
+		for (var i = a.classList.length - 1; i >= 0; i--) {
+			var configurer = firewidget.widgets[ a.classList[i] ];
+			if (configurer) configurer(a, b[0], b[1], b[2], b[3]);
+		};
+	};
+	firewidget.sub = sub;
+	firewidget.close = unsub;
+	firewidget.widgets = {
+		simple_label: function(el, value){ el.innerHTML = value; },
+		simple_input: function(el, onchange){
+			sub($(el.form), 'submit', function(ev){ onchange(el.value); el.value = ''; return false; });
+		}
+	};
+	return firewidget;
+})();
+
+
+
+
+
+
+
+
+// tinytemplate
 
 function template_set(json, dom){
 	function decorate_element(el, json){
@@ -25,100 +71,78 @@ function template_set(json, dom){
 }
 
 
-window.firewidget = (function(){
-	var templates = {}, subs = [], w = {};
-	function sub(ref, ev, f){ subs.push(function(){ ref.off(ev,f); }); ref.on(ev, f); }
 
-	w.fbobjlist = function(el, ref, onclick){
-		sub(ref, 'value', function(snap){
-			var value = snap.val();
-			if (!templates[el.id]) templates[el.id] = el.firstElementChild.cloneNode(true);
-			el.innerHTML = "";
-			if (!value) return;
-			var doms = [];
-			for (var k in value){
-				var o = value[k];
-				if (!o.id) o.id = k;
-				var clone = templates[el.id].cloneNode(true);
-				clone.data = o;
-				clone.id = o.id;
-				clone.onclick = function(){ onclick( this.data ); };
-				doms.push(template_set(o, clone));
-			}
-			doms.forEach(function(dom){ el.appendChild(dom); });
-		});
-	};
-	
-	w.fbtypeahead = function(el, ref, onchange){
-		var options = [];
 
-		sub(ref, 'value', function(snap){
-			options = values(snap.val());
-		});
+// tinyfire
 
-		sub($(el.form), 'submit', function(ev){
-			ev.preventDefault();
-			onchange({ name: el.value, is_new: true });
-			$(el).typeahead('val', '');
-			return false;
-		});
 
-		sub($(el), 'typeahead:selected', function(ev, data){
-			onchange(data);
-			$(el).typeahead('val', '');
-		});
+Object.values = function(obj){
+	if (!obj) return [];
+	return Object.keys(obj).map(function(x){ obj[x].id = x; return obj[x]; });
+}
 
-		$(el).typeahead({autoselect:true}, {
-		  displayKey: 'name',
-		  source: function(query, cb){
-			var q = query && query.toLowerCase();
-			cb(options.filter(function(x){
-				return !query || x.name.toLowerCase().indexOf(q) >= 0;
-			}));
-		  }
-		});
+var templates = {};
+var sub = firewidget.sub;
+
+firewidget.widgets.fbobjlist = function(el, ref, onclick){
+	sub(ref, 'value', function(snap){
+		var value = snap.val();
+		if (!templates[el.id]) templates[el.id] = el.firstElementChild.cloneNode(true);
+		el.innerHTML = "";
+		if (!value) return;
+		var doms = [];
+		for (var k in value){
+			var o = value[k];
+			if (!o.id) o.id = k;
+			var clone = templates[el.id].cloneNode(true);
+			clone.data = o;
+			clone.id = o.id;
+			clone.onclick = function(){ onclick( this.data ); };
+			doms.push(template_set(o, clone));
+		}
+		doms.forEach(function(dom){ el.appendChild(dom); });
+	});
+};
+
+firewidget.widgets.fbtypeahead = function(el, ref, onchange){
+	var options = [];
+
+	sub(ref, 'value', function(snap){
+		options = Object.values(snap.val());
+	});
+
+	sub($(el.form), 'submit', function(ev){
+		ev.preventDefault();
+		onchange({ name: el.value, is_new: true });
 		$(el).typeahead('val', '');
-	};
+		return false;
+	});
 
-	w.fbselect = function(el, ref, onchange){
-		sub(ref, 'value', function(snap){
-			var v = snap.val();
-			$(el).val(v);
-			if (onchange) onchange(v);
-		});
-		sub($(el), 'change', function(ev){
-			ref.set(this.value);
-			if (onchange) onchange(this.value);
-		});
-	};
+	sub($(el), 'typeahead:selected', function(ev, data){
+		onchange(data);
+		$(el).typeahead('val', '');
+	});
 
-	w.simple_input = function(el, onchange){
-		sub($(el.form), 'submit', function(ev){
-			onchange(el.value);
-			el.value = '';
-			return false;
-		});
-	};
+	$(el).typeahead({autoselect:true}, {
+	  displayKey: 'name',
+	  source: function(query, cb){
+		var q = query && query.toLowerCase();
+		cb(options.filter(function(x){
+			return !query || x.name.toLowerCase().indexOf(q) >= 0;
+		}));
+	  }
+	});
+	$(el).typeahead('val', '');
+};
 
-	w.simple_label = function(el, value){
-		el.innerHTML = value;
-	};
-
-
-
-	function firewidget(a, b){
-		if (!b) { subs = []; for (var x in a) firewidget(x, a[x]); return subs; }
-		if (a.trim) a = document.getElementById(a) || document.querySelector(a) || alert(a + " not found.");
-		if (!b.sort) b = [b];
-		for (var i = a.classList.length - 1; i >= 0; i--) {
-			var configurer = w[ a.classList[i] ];
-			if (configurer) configurer(a, b[0], b[1], b[2], b[3]);
-		};
-	};
-
-	firewidget.close = function(subs){
-		subs.forEach(function(sub){ sub(); });
-	};
-
-	return firewidget;
-})();
+firewidget.widgets.fbselect = function(el, ref, onchange){
+	sub(ref, 'value', function(snap){
+		var v = snap.val();
+		$(el).val(v);
+		if (onchange) onchange(v);
+	});
+	sub($(el), 'change', function(ev){
+		ref.set(this.value);
+		if (onchange) onchange(this.value);
+	});
+};
