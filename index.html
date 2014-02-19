@@ -21,7 +21,7 @@
 		<div id="lifestyle_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<li><form><input placeholder="Add a lifestyle..." id="lifestyle_adder" class="simple_input"><input type="submit"></form></li>
+		<form><input placeholder="Add a lifestyle..." id="lifestyle_adder" class="simple_input"><input type="submit"></form>
 	</ul>
 </div>
 
@@ -31,7 +31,7 @@
 		<div id="website_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<li><form><input placeholder="Add a website..." id="website_adder" class="simple_input"><input type="submit"></form></li>
+		<form><input placeholder="Add a website..." id="website_adder" class="simple_input"><input type="submit"></form>
 	</ul>
 </div>
 
@@ -41,9 +41,7 @@
 		<div  id="all_activities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<li>
-			<form><input placeholder="Add an activity..." id="all_activity_adder" class="simple_input"><input class="submit" type="submit"></form>	
-		</li>
+		<form><input placeholder="Add an activity..." id="all_activity_adder" class="simple_input"><input class="submit" type="submit"></form>	
 	</ul>
 </div>
 
@@ -54,24 +52,28 @@
 
 
 <div id="lifestyle" class="page">
-	<h3 class="simple_label" id="lifestyle_name"></h3>
-	<div>
+	<h2 class="simple_label" id="lifestyle_name"></h3>
+	<ul>
+	<li>
 		I've lived this...
 		<select id="lifestyle_testimony" class="fbselect">
 			<option>A few months</option>
 			<option>A year</option>
 			<option>Several years</option>
 		</select>
-	</div>
+	</li>
+	</ul>
 
 
 	<h3>Activities</h3>
+	<form>
 	<ul>
 		<div id="activities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<li><form><input placeholder="Add an activity..." id="activity_adder" class="fbtypeahead"><input type="submit"></form></li>
-	</ul>
+		<input placeholder="Add an activity..." id="activity_adder" class="fbtypeahead"><input type="submit">
+	</ul>	
+	</form>
 
 
 	<h3>Cities</h3>
@@ -79,7 +81,7 @@
 		<div  id="cities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<li><form><input placeholder="Add a city..." id="city_adder" class="fbtypeahead"><input class="submit" type="submit"></form></li>
+		<form><input placeholder="Add a city..." id="city_adder" class="fbtypeahead"><input class="submit" type="submit"></form>
 	</ul>
 
 	<h3>People who've lived this lifestyle</h3>
@@ -93,8 +95,9 @@
 
 
 <div id="activity" class="page">
-	<h3 class="simple_label" id="activity_name"></h3>
-	<div>
+	<h2 class="simple_label" id="activity_name"></h3>
+	<ul>
+		<li>
 		This takes
 		<select id="activity_takes" class="fbselect">
 			<option>10 minutes</option>
@@ -102,18 +105,18 @@
 			<option>an hour</option>
 			<option>several hours</option>
 		</select>
-	</div>
+		</li>
 
-	<div>
+		<li>
 		I
 		<select id="activity_would" class="fbselect">
 			<option>would</option>
 			<option>would not</option>
 		</select>
 		do this next week
-	</div>
+		</li>
 
-	<div>
+		<li>
 		I like this for
 		<select id="activity_time_desire" class="fbselect">
 			<option>Quiet time</option>
@@ -125,7 +128,8 @@
 			<option>Escaping routine</option>
 			<option>Being of service</option>
 		</select>
-	</div>
+		</li>
+	</ul>
 
 	<div id="relative_preferences">
 		<h3>For <b id="relative_for_desire" class="simple_label"></b>, I recommend the following more than <b class="activity_name simple_label"></b></h3>
@@ -133,9 +137,7 @@
 			<div  id="recommended_activities" class="fbobjlist">
 				<li data-set="text:name"></li>
 			</div>
-			<li>
-				<form><input placeholder="Add an activity..." id="recommended_activities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>
-			</li>
+			<form><input placeholder="Add an activity..." id="recommended_activities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>
 		</ul>
 	</div>
 
@@ -145,9 +147,7 @@
 		<div  id="activity_lifestyles_list" class="fbobjlist">
 			<li data-set="text:name"></li>			
 		</div>
-		<li>
-			<form><input placeholder="Add a lifestyle..." id="activity_lifestyles_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
-		</li>
+		<form><input placeholder="Add a lifestyle..." id="activity_lifestyles_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
 	</ul>
 
 
@@ -156,9 +156,7 @@
 		<div  id="activity_websites_list" class="fbobjlist">
 			<li data-set="text:name"></li>			
 		</div>
-		<li>
-			<form><input placeholder="Add a lifestyle..." id="activity_websites_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
-		</li>
+		<form><input placeholder="Add a lifestyle..." id="activity_websites_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
 	</ul>
 
 </div>
@@ -166,14 +164,14 @@
 
 
 <div id="website" class="page">
-	<h3 class="simple_label" id="website_name"></h3>
+	<h2 class="simple_label" id="website_name"></h3>
 
 	<h3>Activities this website coordinates</h3>
 	<ul>
 		<div id="website_activities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<li><form><input placeholder="Add an activity..." id="website_activity_adder" class="fbtypeahead"><input type="submit"></form></li>
+		<form><input placeholder="Add an activity..." id="website_activity_adder" class="fbtypeahead"><input type="submit"></form>
 	</ul>
 </div>
 
