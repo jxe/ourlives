@@ -45,37 +45,41 @@ function* play(){
 
 		// 1. pick or add a lifestyle
 
-		ask("Pick a lifestyle you've lived, a city you've lived in, or a thing you want to be:", ['lifestyles', 'cities', 'identities'], {auto_add: true});
+		ask("Pick a lifestyle you've lived, a city you've lived in, or a thing you're trying to be:", ['lifestyles', 'cities', 'identities'], { hide_reset: true });
 		var container = info.container = yield null;
+
+		if (!container.collection){
+			ask('What kind of thing is "'+container.name+'"?', 'things');
+			var type_of_container = yield null;
+			if (type_of_container.match(/lifestyle/)){
+				container.collection = 'lifestyles';
+			} else if (type_of_container.match(/city/)){
+				container.collection = 'cities';
+			} else {				
+				container.collection = 'identities';
+			}
+			container.id = F.child(container.collection).push({ name: container.name }).name();
+		}
 
 		if (container.collection == 'lifestyles'){
 			yield *ask_about_lifestyle(container);
 		}
 
-
-
 		// 2. pick or add an activity
 
 		if (container.collection == 'lifestyles'){
-			Fireball.set('$lifestyle', container.id);
-			ask("Choose an activity that %ns do:", ['activities_by_lifestyle', 'all_activities']);
+			ask("Choose an activity that %ns do:", ['activities']);
 		} else if (container.collection == 'identities'){
-			Fireball.set('$identity', container.id);
-			ask("Choose an activity that people who are trying to be %n do:", ['activities_by_identity', 'all_activities']);
+			ask("Choose an activity that people who are trying to be %n do:", ['activities']);
 		} else if (container.collection == 'cities'){
-			Fireball.set('$city', container.id);
-			ask("Choose an activity that people who live in %n do:", ['activities_by_city', 'all_activities']);
+			ask("Choose an activity that people who live in %n do:", ['activities']);
 		}
 		var activity = info.activity = yield null;
 
 
-		// add container if they choose one of the noncontainer set
-		ensure_activity_in_container(activity, container);
-
 
 		ask("When people do %a, what are they looking for?", 'time_desires');
 		var activity_time_desire = info.desire = yield null;
-		Fireball.set('$desire', activity_time_desire);
 
 		if (activity.is_new){
 			ask('How long does %a usually take?', 'activity_durations');
@@ -90,6 +94,9 @@ function* play(){
 			}
 		}
 
+		// add container if they choose one of the noncontainer set
+		ensure_activity_in_container(activity, container);
+
 		ask("Would you do %a next week, if you could?", 'yes_or_no');
 		var would_do = yield null;
 		User.would_do(activity.id, would_do)
@@ -99,18 +106,18 @@ function* play(){
 		// 3. get some add'l info about the activity
 
 		if (container.collection != 'lifestyles'){
-			ask("Is there a name for the kind of person who does %a?", 'lifestyles', { escape_hatch: true, auto_add: true });
+			ask("Is there a name for the kind of person who does %a?", ['lifestyles'], { can_skip: true });
 			var other_container = yield null;
 			if (other_container) ensure_activity_in_container(activity, other_container);
 		}
 		if (container.collection != 'cities'){
-			ask("Is there a city where many people do %a?", 'cities', { escape_hatch: true, auto_add: true });
+			ask("Is there a city where many people do %a?", ['cities'], { can_skip: true });
 			var other_container = yield null;
 			if (other_container) ensure_activity_in_container(activity, other_container);
 		}
 
 		if (container.collection != 'identities'){
-			ask("What are people trying to be when they do %a?", 'identities', { escape_hatch: true, auto_add: true });
+			ask("What are people trying to be when they do %a?", ['identities'], { can_skip: true });
 			var other_container = yield null;
 			if (other_container) ensure_activity_in_container(activity, other_container);
 		}
@@ -120,16 +127,16 @@ function* play(){
 
 		// 4. relate that activity to other activities
 
-		ask("For %d, pick an activity you like better than %a:", 'activities_by_desire');
+		ask("For %d, pick an activity you like better than %a:", ['activities']);
 		var better_activity = yield null;
 
 
 		if (container.collection == 'lifestyles'){
-			ask("Choose an activity you don't like as much as %a, but that %ns do for %d:", ['activities_by_lifestyle', 'all_activities'], { escape_hatch: true});
+			ask("Choose an activity you don't like as much as %a, but that %ns do for %d:", ['activities'], { can_skip: true});
 		} else if (container.collection == 'cities'){
-			ask("Choose an activity you don't like as much as %a, but that people in %n do for %d:", ['activities_by_city', 'all_activities'], { escape_hatch: true});
+			ask("Choose an activity you don't like as much as %a, but that people in %n do for %d:", ['activities'], { can_skip: true});
 		} else if (container.collection == 'identities'){			
-			ask("Choose an activity you don't like as much as %a, but that people who want to be %n do for %d:", ['activities_by_identity', 'all_activities'], { escape_hatch: true});
+			ask("Choose an activity you don't like as much as %a, but that people who want to be %n do for %d:", ['activities'], { can_skip: true});
 		}
 		var worse_activity = yield null;
 		if (worse_activity && worse_activity.is_new){
@@ -151,15 +158,15 @@ function* play(){
 			if (same_container == 'Yes'){
 				better_activity.id = new_activity(better_activity.name, activity_time_desire, container);
 			} else if (container.collection == 'lifestyles' ){
-				ask("What lifestyle does " + better_activity.name  +"?", 'lifestyles', { auto_add: true });
+				ask("What lifestyle does " + better_activity.name  +"?", ['lifestyles']);
 				var better_activity_lifestyle = yield null;
 				better_activity.id = new_activity(better_activity.name, activity_time_desire, better_activity_lifestyle);
 			} else if (container.collection == 'cities') {
-				ask("What city do people do " + better_activity.name  +" in?", 'cities', { auto_add: true });
+				ask("What city do people do " + better_activity.name  +" in?", ['cities']);
 				var better_activity_city = yield null;
 				better_activity.id = new_activity(better_activity.name, activity_time_desire, better_activity_city);
 			} else if (container.collection == 'identities') {
-				ask("When people do " + better_activity.name  +" what are they trying to be?", 'identities', { auto_add: true });
+				ask("When people do " + better_activity.name  +" what are they trying to be?", ['identities']);
 				var better_activity_identity = yield null;
 				better_activity.id = new_activity(better_activity.name, activity_time_desire, better_activity_identity);				
 			}
@@ -180,63 +187,8 @@ function* play(){
 
 
 
-Fireball(F, {
-	init: function(){
-		game = play();
-		game.next();
-	},
 
-	map: {
-		"#lifestyles_list...": 'lifestyles',
-		"#identities_list...": 'identities',
-		"#cities_list...":     'cities',
-		"#activities_by_lifestyle_list...": 'activities_by_lifestyle/$lifestyle',
-		"#activities_by_identity_list...": 'activities_by_identity/$identity',
-		"#activities_by_city_list...": 'activities_by_city/$city',
-		"#activities_by_desire_list...": 'activities_by_desire/$desire',
-		"#all_activities_list...": 'activities'
-	},
-
-	calculated_fields: {
-		"#lifestyles_list how_many_lives": function(lifestyle){
-			if (!lifestyle.has_lived) return "";
-			if (lifestyle.has_lived[firebase_user_id]) return "You have lived this";
-			else return Object.keys(lifestyle.has_lived).length + " have lived this";
-		}
-	},
-
-	on_click: {
-		'#answers div a': function(a){
-			if (a.id == 'escape_hatch') return null;
-			var data = a.parentNode.data;
-			if (!data) return game.next(a.innerText);
-			data.is_new = false;
-			data.id = a.parentNode.id;
-			data.collection = a.parentNode.parentNode.parentNode.id;
-			game.next(data);
-		},
-		'#login': function(a){
-			auth.login('facebook', { rememberMe: true });
-		}
-	},
-
-	on_submit: {
-		'form': function(f){
-			var v = f.elements[0].value;
-			f.elements[0].value = '';
-			var data = { name: v, is_new: true, collection: f.parentNode.id };
-			if (auto_add){
-				if (data.collection == 'lifestyles'){
-					data.id = F.child('lifestyles').push({ name: data.name }).name();
-				}
-				if (data.collection == 'identities'){
-					data.id = F.child('identities').push({ name: data.name }).name();
-				}
-				if (data.collection == 'cities'){
-					data.id = F.child('cities').push({ name: data.name }).name();
-				}
-			}
-			game.next(data);
-		}
-	}
+$(function(){
+	game = play();
+	game.next();
 });

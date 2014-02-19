@@ -4,7 +4,7 @@ function values(obj){
 
 
 var width = 960,
-    height = 300;
+    height = 500;
 
 var svg = d3.select("svg").attr("width", width).attr("height", height);
 
@@ -44,6 +44,26 @@ force.on("tick", function() {
 });
 
 
+
+function make_node(new_node){
+    new_node.attr("class", "node");
+    new_node.append("circle")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("r", 8)  
+    new_node.append("text")
+        .attr("dx", 12)
+        .attr("dy", ".35em")
+        .text(function(d) { return d.name });
+    new_node.append("text")
+        .attr("class", "info")
+        .attr("dx", 12)
+        .attr("dy", "1.35em")
+        .text(function(d) { return d.desires.join('/'); }); // + ' ' + (d.lifestyles||[]).join(',');
+};
+
+
+
 F.child('activities').on('value', function(snap) {
 	var got_nodes = snap.val();
 	for (var node_id in got_nodes){
@@ -72,20 +92,10 @@ F.child('activities').on('value', function(snap) {
       .enter().append("path")
         .attr("class", "link");
   
-    var new_node = node.data(nodes, function(n){ return n.id; })
+    node.data(nodes, function(n){ return n.id; })
       .enter().append("g")
-        .attr("class", "node")
-        .call(force.drag);
+        .call(force.drag)
+        .call(make_node);
   
-    new_node.append("circle")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("r", 8)
-  
-    new_node.append("text")
-        .attr("dx", 12)
-        .attr("dy", ".35em")
-        .text(function(d) { return d.name });
-
     force.start();
 });

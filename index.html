@@ -1,188 +1,23 @@
 <a style="float:right" href="#" id="login">FB login</a>
-<style>
 
-#game { max-width: 400; float:left; margin-left: 10px;}
-#graph { max-width: 600; float:left;}
-.link {
-  stroke: #C02626;;
-  stroke-width: 0.5px;
-  marker-end: url(#triangle);
-}
+<link rel="stylesheet" type="text/css" href="styles.css">
 
-.node text {
-  pointer-events: none;
-  font: 10px sans-serif;
-}
-
-circle {
-  stroke-width: 0.5px;
-  cursor: pointer;
-  fill: transparent;
-  stroke: #777 !important;
-}
-
-text {
-	fill: #4E4E4E;
-}
-
-body {
-	font-family: arial;
-	margin:0;
-}
-
-h1 {
-	color: #999;
-	font-size: 15px;
-	background-color: #eee;
-	padding: 10px;
-}
-}
-
-h2 {
-	text-align: center;
-	font-size: 24px;
-	max-width: 600px;
-	margin:auto;
-}
-
-
-.typeahead,
-.tt-query,
-.tt-hint {
-  width: 396px;
-  height: 30px;
-  padding: 8px 12px;
-  font-size: 24px;
-  line-height: 30px;
-  border: 2px solid #ccc;
-  -webkit-border-radius: 8px;
-     -moz-border-radius: 8px;
-          border-radius: 8px;
-  outline: none;
-}
-
-.typeahead {
-  background-color: #fff;
-}
-
-.typeahead:focus {
-  border: 2px solid #0097cf;
-}
-
-.tt-query {
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-}
-
-.tt-hint {
-  color: #999
-}
-
-.tt-dropdown-menu {
-  width: 422px;
-  margin-top: 12px;
-  padding: 8px 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 8px;
-     -moz-border-radius: 8px;
-          border-radius: 8px;
-  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-          box-shadow: 0 5px 10px rgba(0,0,0,.2);
-}
-
-.tt-suggestion {
-  padding: 3px 20px;
-  font-size: 18px;
-  line-height: 24px;
-}
-
-.tt-suggestion.tt-cursor {
-  color: #fff;
-  background-color: #0097cf;
-
-}
-
-.tt-suggestion p {
-  margin: 0;
-}
-
-
-</style>
-
-<h1>Our Lives:  a wikipedia of lifestyle choices</h1>
+<h1>Our Lives:  a wikipedia of lifestyle choices, identities, activities</h1>
 
 <div id="game">
+	<a id="reset" href="#">Cancel</a>
+	<a id="skip" href="#">Skip this question</a>
+
+	<h3>Contribute your experience</h3>
 	<h2 id="prompt"></h2>
-	<input type="text" class="typeahead">
+	<form><input type="text" id="typeahead"><input id="submit" type="submit"></form>
+
 	<div id="answers">
-		<div id="lifestyles">
-			<ul id="lifestyles_list">
-				<li><a href="#">
-					<span data-set="text:name"></span>
-					<i data-set="text:how_many_lives"></i>
-				</a></li>
-			</ul>
-			<form><input placeholder="another lifestyle..."></form>
+		<div id="things">
+			<li><a href="#">A lifestyle</a></li>
+			<li><a href="#">A city</a></li>
+			<li><a href="#">A thing I want to be</a></li>
 		</div>
-
-		<div id="cities">
-			<ul id="cities_list">
-				<li><a href="#"><span data-set="text:name"></span></a></li>
-			</ul>
-			<form><input placeholder="another city..."></form>
-		</div>
-
-		<div id="identities">
-			<ul id="identities_list">
-				<li><a href="#"><span data-set="text:name"></span></a></li>
-			</ul>
-			<form><input placeholder="another identity..."></form>
-		</div>
-
-
-
-		<div id="activities_by_desire">
-			<ul id="activities_by_desire_list">
-				<li><a data-set="text:name" href="#">Activity 1</a></li>
-			</ul>
-			<form><input placeholder="other..."></form>
-		</div>
-
-		<div id="activities_by_city">
-			<ul id="activities_by_city_list">
-				<li><a data-set="text:name" href="#">Activity 1</a></li>
-			</ul>
-			<form><input placeholder="other..."></form>
-		</div>
-
-		<div id="activities_by_identity">
-			<ul id="activities_by_identity_list">
-				<li><a data-set="text:name" href="#">Activity 1</a></li>
-			</ul>
-			<form><input placeholder="other..."></form>
-		</div>
-
-		<div id="activities_by_lifestyle">
-			<ul id="activities_by_lifestyle_list">
-				<li><a data-set="text:name" href="#">Activity 1</a></li>
-			</ul>
-			<form><input placeholder="other..."></form>
-		</div>
-
-		<a id="escape_hatch" href="#">Can't think of one</a>
-
-		<div id="all_activities">
-			<ul id="all_activities_list">
-				<li><a data-set="text:name" href="#">Activity 1</a></li>
-			</ul>
-		</div>
-
-
-
 		<div id="lifestyle_timeframes">
 			<li><a href="#">A few months</a></li>
 			<li><a href="#">A year</a></li>
@@ -212,6 +47,10 @@ h2 {
 </div>
 
 
+<div id="summary">
+	<h3>In our system</h3>
+	<span id="summary_text"></span>
+</div>
 
 
 <div id="graph">
@@ -234,11 +73,11 @@ h2 {
 
 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
 <script src='https://cdn.firebase.com/js/simple-login/1.2.3/firebase-simple-login.js'></script>
-<script src="fireball.js"></script>
 <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-<script src="db.js"></script>
 <script src="http://twitter.github.com/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script src="db.js"></script>
 <script src="ui.js"></script>
 <script src="game-es5.js"></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="graph.js"></script>
