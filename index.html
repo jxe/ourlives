@@ -4,11 +4,18 @@
 
 <h1>
 	Our Lives:  collective wisdom about lifestyles and activities
+	<br>
 	<button id="goto_lifestyles_index">Tell us about a lifestyle</button>
 	<button id="goto_activities_index">Tell us about an activity</button>
+	<button id="goto_websites_index">Tell us about a website</button>
 	<button id="goto_activities_graph">Graph activities prefs</button>
 </h1>
 
+
+
+
+
+<!-- index pages -->
 
 
 <div id="lifestyles" class="page">
@@ -20,6 +27,33 @@
 		<li><form><input placeholder="Add a lifestyle..." id="lifestyle_adder" class="simple_input"><input type="submit"></form></li>
 	</ul>
 </div>
+
+<div id="websites" class="page">
+	<h3>Choose a website you've spent time on, or add one...</h3>
+	<ul>
+		<div id="website_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<li><form><input placeholder="Add a website..." id="website_adder" class="simple_input"><input type="submit"></form></li>
+	</ul>
+</div>
+
+<div id="activities" class="page">
+	<h3>We've got these in our DB...</h3>
+	<ul>
+		<div  id="all_activities_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<li>
+			<form><input placeholder="Add an activity..." id="all_activity_adder" class="simple_input"><input class="submit" type="submit"></form>	
+		</li>
+	</ul>
+</div>
+
+
+
+
+<!-- detail pages -->
 
 
 <div id="lifestyle" class="page">
@@ -52,19 +86,6 @@
 	</ul>
 </div>
 
-
-
-<div id="activities" class="page">
-	<h3>We've got these in our DB...</h3>
-	<ul>
-		<div  id="all_activities_list" class="fbobjlist">
-			<li data-set="text:name"></li>
-		</div>
-		<li>
-			<form><input placeholder="Add an activity..." id="all_activity_adder" class="simple_input"><input class="submit" type="submit"></form>	
-		</li>
-	</ul>
-</div>
 
 
 <div id="activity" class="page">
@@ -123,6 +144,32 @@
 		<li>
 			<form><input placeholder="Add a lifestyle..." id="activity_lifestyles_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
 		</li>
+	</ul>
+
+
+	<h3>Websites that coordinate this activity</h3>
+	<ul>
+		<div  id="activity_websites_list" class="fbobjlist">
+			<li data-set="text:name"></li>			
+		</div>
+		<li>
+			<form><input placeholder="Add a lifestyle..." id="activity_websites_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
+		</li>
+	</ul>
+
+</div>
+
+
+
+<div id="website" class="page">
+	<h3 class="simple_label" id="website_name"></h3>
+
+	<h3>Activities this website coordinates</h3>
+	<ul>
+		<div id="website_activities_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<li><form><input placeholder="Add an activity..." id="website_activity_adder" class="fbtypeahead"><input type="submit"></form></li>
 	</ul>
 </div>
 

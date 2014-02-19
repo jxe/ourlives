@@ -31,6 +31,7 @@ function reveal(page, firewidgets){
 
 $('#goto_lifestyles_index').click(lifestyles_index);
 $('#goto_activities_index').click(activities_index);
+$('#goto_websites_index').click(websites_index);
 $('#goto_activities_graph').click(goto_activities_graph);
 
 
@@ -49,6 +50,20 @@ function lifestyles_index() {
 		}
 	});
 }
+
+
+function websites_index() {
+	reveal('websites', {
+		website_list: [fb('websites'), function(data){
+			website_detail(data.id, data.name);
+		}],
+		website_adder: function(name){
+			fb('websites').push({ name: name });
+		}
+	});
+}
+
+
 
 function lifestyle_detail(lid, name){
 	reveal('lifestyle', {
@@ -74,6 +89,22 @@ function lifestyle_detail(lid, name){
 		}]
 	});
 }
+
+function website_detail(wid, name){
+	reveal('website', {
+		website_name: name,
+
+		website_activities_list: [fb('activities_by_website/'+wid), function(data){
+			activity_detail(data.id, data.name);
+		}],
+
+		website_activity_adder: [fb('activities'), function(data){
+			if (!data.id) data.id = fb('activities').push(data).name();
+			fb('activities/'+data.id+'/websites/'+wid).set({ name: name });
+		}]
+	});
+}
+
 
 function activities_index() {
 	reveal('activities', {
@@ -114,6 +145,13 @@ function activity_detail(aid, name){
 		activity_lifestyles_adder: [fb('lifestyles'), function(data){
 			if (!data.id) data.id = fb('lifestyles').push(data).name();
 			fb('activities/%/lifestyles/%', aid, data.id).set(data);
+		}],
+		activity_websites_list: [fb('activities/%/websites', aid), function(data){
+			website_detail(data.id, data.name);
+		}],
+		activity_websites_adder: [fb('websites'), function(data){
+			if (!data.id) data.id = fb('websites').push(data).name();
+			fb('activities/%/websites/%', aid, data.id).set(data);
 		}]
 	});
 }

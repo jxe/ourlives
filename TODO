@@ -1,32 +1,51 @@
-FIX PROBLEMS
+m1
+- fix the graph to calculate preferences & link strength correctly
 
-- "start over" button in data entry
+m2
+- add websites list to activity_detail
+- add websites detail
+- add cities list and detail
+
+m3
+- jigger it up with bootstrap or similar (with a 'well' class)
+- add identities to activity_detail
+
+
+
+
+
+
+1h
+- clean the fucking data
+
+IMPROVE CHART
+
+- 1. preferred links get pulled up a bit every tick
+- 2. disable gravity and rewrite to be one dimensional
+
+** send **
+
+
+
+BEFORE SENDING TO MOZILLA TYPES?
+
+- (10m) annotate activity nodes with container & container id
+- add scorekeeping for how much you've added
+- calculate arrow direction on server side with a strong_edges firebase array
 
 
 CLEANUP
-- replace all lists with twitter's typeahead.js
-- center prompt text and typeahead box with d3 stuff right above and "Add your experience.."
-- switch yield null over to yield* ask() and put the other yield in the ask
 
 
 ============================
 
 
-- bring back locations/cities
-
-
-
-
-v0.1 -- refactor & first cut of the d3.js map
-==================================
-- three tabs:  game, inventory, map
-- d3.js
-- map loads all activities and builds better_than/worse_than edges
-
 
 
 v0.2 -- inventory
 ==============================
+- switch yield null over to yield* ask() and put the other yield in the ask
+- three tabs:  game, inventory, map
 - tips -> inventory
 - inventory is saved on the server side, by user id
 - new lifestyle button switches to a two-input form
@@ -43,7 +62,8 @@ v0.3 -- can replace sandbar
 v0.4 -- watering hole
 =====================
 - watering hole tab shows things that need work (don't have enough ratings, may need name changes, need helpful links or images)
-
+- merge tool
+45
 
 v0.5 -- ???
 ===========================
