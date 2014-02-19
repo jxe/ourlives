@@ -253,49 +253,50 @@
 
 	document.addEventListener('DOMContentLoaded', function(){
 		refresh();
-		var hasTouch = ('ontouchstart' in window);
-		if (hasTouch) document.addEventListener('click', function(ev){
-			ev.stopPropagation();
-			ev.preventDefault();
-			return false;
-		});
-		document.addEventListener('click', function(ev){
-			for (var k in on_click){
-				var el = closest(ev.target, k);
-				if (el){
-					on_click[k](el, ev);
-					refresh();
-                    ev.stopPropagation();
-					ev.preventDefault();
-					return false;
-				}
-			}
-		});
 
-		document.addEventListener('submit', function(ev){
-			for (var k in on_submit){
-				var el = closest(ev.target, k);
-				if (el){
-					on_submit[k](el);
-					refresh();
-					ev.stopPropagation();
-					ev.preventDefault();
-					return false;
+		if (Object.keys(on_click).length){
+			document.addEventListener('click', function(ev){
+				for (var k in on_click){
+					var el = closest(ev.target, k);
+					if (el){
+						on_click[k](el, ev);
+						refresh();
+	                    ev.stopPropagation();
+						ev.preventDefault();
+						return false;
+					}
 				}
-			}
-		});
+			});			
+		}
+
+		if (Object.keys(on_submit).length){
+			document.addEventListener('submit', function(ev){
+				for (var k in on_submit){
+					var el = closest(ev.target, k);
+					if (el){
+						on_submit[k](el);
+						refresh();
+						ev.stopPropagation();
+						ev.preventDefault();
+						return false;
+					}
+				}
+			});
+		}
 		
-		document.addEventListener('change', function(ev){
-			for (var k in on_change){
-				var el = closest(ev.target, k);
-				if (el){
-					on_change[k](el);
-					ev.preventDefault();
-					refresh();
-					return false;
+		if (Object.keys(on_change).length){
+			document.addEventListener('change', function(ev){
+				for (var k in on_change){
+					var el = closest(ev.target, k);
+					if (el){
+						on_change[k](el);
+						ev.preventDefault();
+						refresh();
+						return false;
+					}
 				}
-			}
-		});
+			});
+		}
 	});
 
 	function extend(obj, props){
