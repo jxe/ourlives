@@ -86,6 +86,16 @@ function lifestyle_detail(lid, name){
 			// jump to that city
 		}],
 
+		users_list: [fb('users_by_lifestyle/%', lid), function(data){
+			// jump to that city
+		}, {
+			fbphoto: function(user){
+				var fbid = user.id.split(':')[1];
+				if (fbid) return "http://graph.facebook.com/"+fbid+"/picture";
+				else return "";
+			}
+		}],
+
 		city_adder: [fb('cities'), function(data){
 			if (!data.id) data.id = fb('cities').push(data).name();
 			fb('lifestyles/'+lid+'/cities/'+data.id).set({ name: data.name });

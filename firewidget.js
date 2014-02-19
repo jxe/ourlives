@@ -84,9 +84,10 @@ Object.values = function(obj){
 var templates = {};
 var sub = firewidget.sub;
 
-firewidget.widgets.fbobjlist = function(el, ref, onclick){
+firewidget.widgets.fbobjlist = function(el, ref, onclick, calcfns){
 	sub(ref, 'value', function(snap){
 		var value = snap.val();
+		console.log(el, value);
 		if (!templates[el.id]) templates[el.id] = el.firstElementChild.cloneNode(true);
 		el.innerHTML = "";
 		if (!value) return;
@@ -94,6 +95,7 @@ firewidget.widgets.fbobjlist = function(el, ref, onclick){
 		for (var k in value){
 			var o = value[k];
 			if (!o.id) o.id = k;
+			if (calcfns) for (var k in calcfns) o[k] = calcfns[k](o);
 			var clone = templates[el.id].cloneNode(true);
 			clone.data = o;
 			clone.id = o.id;
