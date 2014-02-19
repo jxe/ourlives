@@ -14,7 +14,8 @@ function fb(){
 	var path = str.replace(/%/g, function(m){ return args.shift(); });
 	return F.child(path);
 }
-$('#login').on('click', function(){ auth.login('facebook', { rememberMe: true }); });
+function login(){ auth.login('facebook', { rememberMe: true }); }
+$('#login').on('click', login);
 
 
 
@@ -41,6 +42,7 @@ $('#goto_activities_graph').click(goto_activities_graph);
 
 
 function lifestyles_index() {
+	if (!firebase_user_id) return login();
 	reveal('lifestyles', {
 		lifestyle_list: [fb('lifestyles'), function(data){
 			lifestyle_detail(data.id, data.name);
@@ -53,6 +55,7 @@ function lifestyles_index() {
 
 
 function websites_index() {
+	if (!firebase_user_id) return login();
 	reveal('websites', {
 		website_list: [fb('websites'), function(data){
 			website_detail(data.id, data.name);
@@ -107,6 +110,7 @@ function website_detail(wid, name){
 
 
 function activities_index() {
+	if (!firebase_user_id) return login();
 	reveal('activities', {
 		all_activities_list: [fb('activities'), function(data){
 			activity_detail(data.id, data.name);
