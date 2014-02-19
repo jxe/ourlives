@@ -2,55 +2,130 @@
 
 <link rel="stylesheet" type="text/css" href="styles.css">
 
-<h1>Our Lives:  a wikipedia of lifestyle choices, identities, activities</h1>
+<h1>
+	Our Lives:  collective wisdom about lifestyles and activities
+	<button id="goto_lifestyles_index">Tell us about a lifestyle</button>
+	<button id="goto_activities_index">Tell us about an activity</button>
+</h1>
 
-<div id="game">
-	<a id="reset" href="#">Cancel</a>
-	<a id="skip" href="#">Skip this question</a>
 
-	<h3>Contribute your experience</h3>
-	<h2 id="prompt"></h2>
-	<form><input type="text" id="typeahead"><input id="submit" type="submit"></form>
 
-	<div id="answers">
-		<div id="things">
-			<li><a href="#">A lifestyle</a></li>
-			<li><a href="#">A city</a></li>
-			<li><a href="#">A thing I want to be</a></li>
+<div id="lifestyles" class="page">
+	<h3>Choose a lifestyle that you've lived, or add one...</h3>
+	<ul>
+		<div id="lifestyle_list" class="fbobjlist">
+			<li data-set="text:name"></li>
 		</div>
-		<div id="lifestyle_timeframes">
-			<li><a href="#">A few months</a></li>
-			<li><a href="#">A year</a></li>
-			<li><a href="#">Several years</a></li>
-		</div>
-		<div id="yes_or_no">
-			<li><a href="#">Yes</a></li>
-			<li><a href="#">No</a></li>
-		</div>
-		<div id="activity_durations">
-			<li><a href="#">10 minutes</a></li>
-			<li><a href="#">30 minutes</a></li>
-			<li><a href="#">an hour</a></li>
-			<li><a href="#">several hours</a></li>
-		</div>
-		<div id="time_desires">
-			<li><a href="#">Quiet time</a></li>
-			<li><a href="#">Quality time with friends</a></li>
-			<li><a href="#">Learning</a></li>
-			<li><a href="#">Creative projects</a></li>
-			<li><a href="#">Exercise</a></li>
-			<li><a href="#">Fresh air</a></li>
-			<li><a href="#">Escaping routine</a></li>
-			<li><a href="#">Being of service</a></li>
-		</div>
+		<li><form><input placeholder="Add a lifestyle..." id="lifestyle_adder" class="simple_input"><input type="submit"></form></li>
+	</ul>
+</div>
+
+
+<div id="lifestyle" class="page">
+	<h3 class="simple_label" id="lifestyle_name"></h3>
+	<div>
+		I've lived this...
+		<select id="lifestyle_testimony" class="fbselect">
+			<option>A few months</option>
+			<option>A year</option>
+			<option>Several years</option>
+		</select>
 	</div>
+
+
+	<h3>Activities</h3>
+	<ul>
+		<div id="activities_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<li><form><input placeholder="Add an activity..." id="activity_adder" class="fbtypeahead"><input type="submit"></form></li>
+	</ul>
+
+
+	<h3>Cities</h3>
+	<ul>
+		<div  id="cities_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<li><form><input placeholder="Add a city..." id="city_adder" class="fbtypeahead"><input class="submit" type="submit"></form></li>
+	</ul>
 </div>
 
 
-<div id="summary">
-	<h3>In our system</h3>
-	<span id="summary_text"></span>
+
+<div id="activities" class="page">
+	<h3>We've got these in our DB...</h3>
+	<ul>
+		<div  id="all_activities_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<li>
+			<form><input placeholder="Add an activity..." id="all_activity_adder" class="simple_input"><input class="submit" type="submit"></form>	
+		</li>
+	</ul>
 </div>
+
+
+<div id="activity" class="page">
+	<h3 class="simple_label" id="activity_name"></h3>
+	<div>
+		This takes
+		<select id="activity_takes" class="fbselect">
+			<option>10 minutes</option>
+			<option>30 minutes</option>
+			<option>an hour</option>
+			<option>several hours</option>
+		</select>
+	</div>
+
+	<div>
+		I
+		<select id="activity_would" class="fbselect">
+			<option>would</option>
+			<option>would not</option>
+		</select>
+		do this next week
+	</div>
+
+	<div>
+		I like this for
+		<select id="activity_time_desire" class="fbselect">
+			<option>Quiet time</option>
+			<option>Quality time with friends</option>
+			<option>Learning</option>
+			<option>Creative projects</option>
+			<option>Exercise</option>
+			<option>Fresh air</option>
+			<option>Escaping routine</option>
+			<option>Being of service</option>
+		</select>
+	</div>
+
+	<div id="relative_preferences">
+		<h3>For <b id="relative_for_desire" class="simple_label"></b>, I recommend the following more than <b class="activity_name simple_label"></b></h3>
+		<ul>
+			<div  id="recommended_activities" class="fbobjlist">
+				<li data-set="text:name"></li>
+			</div>
+			<li>
+				<form><input placeholder="Add an activity..." id="recommended_activities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>
+			</li>
+		</ul>
+	</div>
+
+
+	<h3>Lifestyles that include this activity</h3>
+	<ul>
+		<div  id="activity_lifestyles_list" class="fbobjlist">
+			<li data-set="text:name"></li>			
+		</div>
+		<li>
+			<form><input placeholder="Add a lifestyle..." id="activity_lifestyles_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
+		</li>
+	</ul>
+</div>
+
+
 
 
 <div id="graph">
@@ -71,13 +146,14 @@
 </div>
 
 
+<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
 <script src='https://cdn.firebase.com/js/simple-login/1.2.3/firebase-simple-login.js'></script>
-<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 <script src="http://twitter.github.com/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
-<script src="db.js"></script>
+<script src="firewidget.js"></script>
+
 <script src="ui.js"></script>
-<script src="game-es5.js"></script>
-<script src="graph.js"></script>
+<script src="pages.js"></script>
+<!-- <script src="graph.js"></script> -->

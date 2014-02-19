@@ -42,7 +42,7 @@ fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
    activities.on('child_added', function(snap){
       var key = snap.name(), data = snap.val();
       index(key, data, activities_by_desire, data.desires || [], false);
-      index(key, data, activities_by_lifestyle, data.lifestyles || [], false);
+      index(key, data, activities_by_lifestyle, Object.keys(data.lifestyles ||{}), false);
       index(key, data, activities_by_identity, data.identities || [], false);
       index(key, data, activities_by_city, data.cities || [], false);
    });
@@ -50,7 +50,7 @@ fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
    activities.on('child_changed', function(snap){
       var key = snap.name(), data = snap.val();
       index(key, data, activities_by_desire, data.desires || [], true);
-      index(key, data, activities_by_lifestyle, data.lifestyles || [], true);
+      index(key, data, activities_by_lifestyle, Object.keys(data.lifestyles) || [], true);
       index(key, data, activities_by_identity, data.identities || [], true);
       index(key, data, activities_by_city, data.cities || [], true);
    });

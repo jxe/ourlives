@@ -1,10 +1,11 @@
+.page { display: none; padding: 10px;}
 #game { max-width: 400; margin: 5px 10px ; padding: 10px; background: #ddd; border-radius: 5px; float: left; }
 #summary { max-width: 400; margin: 5px 10px ; padding: 10px; background: #ddd; border-radius: 5px; float: left; font-size: 12px; }
 #summary p { margin: 5px; }
 #graph { text-align:center;}
 #answers { text-align: left; }
 #answers div { display: none; }
-#submit { display:none;}
+input[type=submit] { visibility: hidden;}
 #reset { float:right;}
 form{ margin:0;}
 #skip { float: right; color: #555; text-decoration: none}
@@ -49,22 +50,24 @@ h1 {
 }
 }
 
-h2 {
-	text-align: center;
+h2, h3 {
+	/*text-align: center;*/
 	font-size: 24px;
 	max-width: 600px;
 	margin:auto;
 }
 
-h3 {
+/*h3 {
    color: #666; 
    font-size: 13px;
    text-align: left;
    margin:0;
    /*padding-left: 10px;*/
-}
+/*}*/
 
-#typeahead,
+
+
+.fbtypeahead,
 .tt-query,
 .tt-hint {
   width: 396px;
@@ -79,11 +82,11 @@ h3 {
   outline: none;
 }
 
-#typeahead {
+.fbtypeahead {
   background-color: #fff;
 }
 
-#typeahead:focus {
+.fbtypeahead:focus {
   border: 2px solid #0097cf;
 }
 
