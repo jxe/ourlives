@@ -55,8 +55,8 @@ function make_node(new_node){
 
 
 
-function goto_activities_graph(){
-    reveal('graph');
+function activities_graph(){
+    reveal('.page', 'graph');
     F.child('activities').once('value', function(snap) { build_activities_graph(snap.val()); });
 }
 
@@ -110,7 +110,8 @@ function build_activities_graph(got_nodes){
     node.data(nodes, function(n){ return n.id; })
       .enter().append("g")
         .call(force.drag)
-        .call(make_node);
+        .call(make_node)
+        .on('click', function(n){ activity_detail(n.id, n.name); });
   
     force.start();
 };

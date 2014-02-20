@@ -3,10 +3,10 @@
 <h1>
 	Our Lives:  collective wisdom about lifestyles and activities
 	<br>
-	<button id="goto_lifestyles_index">Tell us about a lifestyle</button>
-	<button id="goto_activities_index">Tell us about an activity</button>
-	<button id="goto_websites_index">Tell us about a website</button>
-	<button id="goto_activities_graph">Graph activities prefs</button>
+	<button onclick="lifestyles_index()">Tell us about a lifestyle</button>
+	<button onclick="activities_index()">Tell us about an activity</button>
+	<button onclick="websites_index()">Tell us about a website</button>
+	<button onclick="activities_graph()">Graph activities prefs</button>
 </h1>
 
 
@@ -53,10 +53,12 @@
 
 <div id="lifestyle" class="page">
 	<h2 class="simple_label" id="lifestyle_name"></h3>
+	<h4>a lifestyle</h4>
 	<ul>
 	<li>
 		I've lived this...
 		<select id="lifestyle_testimony" class="fbselect">
+			<option value="">Never</option>
 			<option>A few months</option>
 			<option>A year</option>
 			<option>Several years</option>
@@ -65,7 +67,7 @@
 	</ul>
 
 
-	<h3>Activities</h3>
+	<h3>What <b>activities</b> are part of this lifestyle?</h3>
 	<form>
 	<ul>
 		<div id="activities_list" class="fbobjlist">
@@ -76,7 +78,7 @@
 	</form>
 
 
-	<h3>Cities</h3>
+	<h3>In which <b>cities</b> is this lifestyle popular?</h3>
 	<ul>
 		<div  id="cities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
@@ -84,18 +86,17 @@
 		<form><input placeholder="Add a city..." id="city_adder" class="fbtypeahead"><input class="submit" type="submit"></form>
 	</ul>
 
-	<h3>People who've lived this lifestyle</h3>
-	<ul>
-		<div id="users_list" class="fbobjlist">
-			<li><img data-set="src:fbphoto"></li>
-		</div>
-	</ul>
+	<h3>These <b>people</b> have tried this lifestyle</h3>
+	<div id="users_list" class="fbobjlist">
+		<img data-set="src:fbphoto">
+	</div>
 </div>
 
 
 
 <div id="activity" class="page">
 	<h2 class="simple_label" id="activity_name"></h3>
+	<h4>an activity</h4>
 	<ul>
 		<li>
 		This takes
@@ -165,6 +166,7 @@
 
 <div id="website" class="page">
 	<h2 class="simple_label" id="website_name"></h3>
+	<h4>a website</h4>
 
 	<h3>Activities this website coordinates</h3>
 	<ul>

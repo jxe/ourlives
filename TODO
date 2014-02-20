@@ -1,37 +1,37 @@
-m1
-- fix the graph to calculate preferences & link strength correctly
-
 m2
-- add websites list to activity_detail
-- add websites detail
-- add cities list and detail
+- mobile formatting
+- add "Tell us about YOU"
+- fix some kind of signin bug?
 
 m3
-- jigger it up with bootstrap or similar (with a 'well' class)
-- add identities to activity_detail
+- activity reminder page, which lets you choose a quick link and an image and download a sand bookmark
+- add instagram photos
 
 
+m3
+- "I prefer this lifestyle" / "I prefer other lifestyles I've tried" -- only shows up if you've lived it
+- fix fbphoto styling
+- add cities list and detail -- index cities_by_lifestyle
 
-
-
-
-1h
-- clean the fucking data
-
-IMPROVE CHART
-
-- 1. preferred links get pulled up a bit every tick
-- 2. disable gravity and rewrite to be one dimensional
 
 ** send **
 
 
+m4
+- add identities to activity_detail
 
-BEFORE SENDING TO MOZILLA TYPES?
+m6
+- style it better
+- jigger it up with bootstrap or similar (with a 'well' class)
 
-- (10m) annotate activity nodes with container & container id
-- add scorekeeping for how much you've added
-- calculate arrow direction on server side with a strong_edges firebase array
+
+
+
+IMPROVE CHART
+
+- 1. preferred links get pulled up a bit every tick
+
+
 
 
 CLEANUP

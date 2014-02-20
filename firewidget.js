@@ -6,40 +6,45 @@
 // tinywidgets
 
 
-window.firewidget = (function(){
-	var subs = {};
-	function sub(ref, ev, f){ 
-		if (!subs[sub_scope]) subs[sub_scope] = []; 
-		subs[sub_scope].push(function(){ ref.off(ev,f); });
-		ref.on(ev, f); 
-	}
-	function unsub(scope){
-		if (!scope) Object.keys(subs).forEach(function(s){ unsub(s); });
-		if (!subs[scope]) return;
-		subs[scope].forEach(function(sub){ sub(); });
-		delete subs[scope];
-	}
-	function firewidget(a, b){
+(function(){
+	var subs = {}, sub_scope, domains = {};
+	window.firewidget = function(a, b){
 		if (!b) { for (var x in a) firewidget(x, a[x]); return; }
-		if (a.trim) {
-			unsub(sub_scope = a);
-			a = document.getElementById(a) || document.querySelector(a) || alert(a + " not found.");
-		}
+		firewidget.unsub(sub_scope = a);
+		var el = document.getElementById(a) || document.querySelector(a) || alert(a + " not found.");
 		if (!b.sort) b = [b];
-		for (var i = a.classList.length - 1; i >= 0; i--) {
-			var configurer = firewidget.widgets[ a.classList[i] ];
-			if (configurer) configurer(a, b[0], b[1], b[2], b[3]);
+		for (var i = el.classList.length - 1; i >= 0; i--) {
+			var c = firewidget.widgets[ el.classList[i] ];
+			if (c) c(el, b[0], b[1], b[2], b[3], b[4]);
 		};
 	};
-	firewidget.sub = sub;
-	firewidget.close = unsub;
+	firewidget.sub = function(ref, ev, f){
+		if (!subs[sub_scope]) subs[sub_scope] = [];
+		subs[sub_scope].push(function(){ ref.off ? ref.off(ev,f) : ref.removeEventListener(ev,f); });
+		ref.on ? ref.on(ev, f) : ref.addEventListener(ev, f);
+	}
+	firewidget.unsub = firewidget.close = function(scope){
+		if (!scope) scope = Object.keys(subs);
+		if (scope.forEach) scope.forEach(function(s){ firewidget.unsub(s); });
+		if (subs[scope]) subs[scope].forEach(function(sub){ sub(); });
+		delete subs[scope];
+	};
+	firewidget.reveal = function(domain, id, wires){
+		var elements = document.querySelectorAll(domain);
+		Array.prototype.forEach.call(elements, function(el){ el.style.display = 'none'; });
+		document.getElementById(id).style.display = 'block';
+		if (domains[domain]) firewidget.unsub(domains[domain]);
+		domains[domain] = Object.keys(wires || {});
+		if (wires) firewidget(wires);
+	};
 	firewidget.widgets = {
-		simple_label: function(el, value){ el.innerHTML = value; },
+		simple_label: function(el, value){
+			el.innerHTML = value;
+		},
 		simple_input: function(el, onchange){
-			sub($(el.form), 'submit', function(ev){ onchange(el.value); el.value = ''; return false; });
+			firewidget.sub(el.form, 'submit', function(ev){ onchange(el.value); el.value = ''; return false; });
 		}
 	};
-	return firewidget;
 })();
 
 
@@ -51,7 +56,7 @@ window.firewidget = (function(){
 
 // tinytemplate
 
-function template_set(json, dom){
+function mikrotemplate(el, obj_or_array){
 	function decorate_element(el, json){
 		var directives = el.getAttribute('data-set') ? el.getAttribute('data-set').split(' ') : [];
 		directives.forEach(function(word){
@@ -63,11 +68,23 @@ function template_set(json, dom){
 			else el.setAttribute(attr, json[path]);
 		});
 	}
-	if (!json) json = {};
-	decorate_element(dom, json);
-	var matches = dom.querySelectorAll('[data-set]');
-	for (var i = 0; i < matches.length; i++) decorate_element(matches[i], json);
-	return dom;
+	function decorate_subtree(el, json){
+		el.data = json;
+		decorate_element(el, json);
+		var matches = el.querySelectorAll('[data-set]');
+		for (var i = 0; i < matches.length; i++) decorate_element(matches[i], json);
+	}
+	if (!obj_or_array) return;
+	if (!obj_or_array.forEach) return decorate_subtree(el, obj_or_array);
+	if (!mikrotemplate.templates) mikrotemplate.templates = {};
+	if (!mikrotemplate.templates[el.id]) mikrotemplate.templates[el.id] = el.firstElementChild.cloneNode(true);
+	el.innerHTML = "";
+	obj_or_array.forEach(function(o){
+		var clone = mikrotemplate.templates[el.id].cloneNode(true);
+		clone.id = o.id;
+		decorate_subtree(clone, o);
+		el.appendChild(clone);
+	});
 }
 
 
@@ -76,75 +93,74 @@ function template_set(json, dom){
 // tinyfire
 
 
-Object.values = function(obj){
-	if (!obj) return [];
-	return Object.keys(obj).map(function(x){ obj[x].id = x; return obj[x]; });
-}
 
-var templates = {};
-var sub = firewidget.sub;
+(function(){
+	var sub = firewidget.sub, w = firewidget.widgets;
 
-firewidget.widgets.fbobjlist = function(el, ref, onclick, calcfns){
-	sub(ref, 'value', function(snap){
-		var value = snap.val();
-		console.log(el, value);
-		if (!templates[el.id]) templates[el.id] = el.firstElementChild.cloneNode(true);
-		el.innerHTML = "";
-		if (!value) return;
-		var doms = [];
-		for (var k in value){
-			var o = value[k];
-			if (!o.id) o.id = k;
-			if (calcfns) for (var k in calcfns) o[k] = calcfns[k](o);
-			var clone = templates[el.id].cloneNode(true);
-			clone.data = o;
-			clone.id = o.id;
-			clone.onclick = function(){ onclick( this.data ); };
-			doms.push(template_set(o, clone));
-		}
-		doms.forEach(function(dom){ el.appendChild(dom); });
-	});
-};
+	function values(obj){
+		if (!obj) return [];
+		return Object.keys(obj).map(function(x){ obj[x].id = x; return obj[x]; });
+	}
 
-firewidget.widgets.fbtypeahead = function(el, ref, onchange){
-	var options = [];
+	w.fbobjlist = function(el, ref, onclick, calcfns){
+		sub(ref, 'value', function(snap){
+			var value = snap.val();
+			var array = value ? values(value) : [];
+			if (calcfns) array.forEach(function(o){ for (var k in calcfns) o[k] = calcfns[k](o); });
+			mikrotemplate(el, array);
+			if (!onclick) return;
+			var children = el.childNodes;
+			for (var i = children.length - 1; i >= 0; i--) {
+				children[i].onclick = function(){ onclick( this.data ); };			
+			}
+		});
+	};
 
-	sub(ref, 'value', function(snap){
-		options = Object.values(snap.val());
-	});
 
-	sub($(el.form), 'submit', function(ev){
-		ev.preventDefault();
-		onchange({ name: el.value, is_new: true });
+	w.fbselect = function(el, ref, onchange){
+		sub(ref, 'value', function(snap){
+			var v = snap.val();
+			$(el).val(v);
+			if (onchange) onchange(v);
+		});
+		sub($(el), 'change', function(ev){
+			if (!this.value) ref.remove();
+			else ref.set(this.value);
+			if (onchange) onchange(this.value);
+		});
+	};
+
+
+	// requires jquery and the twitter typeahead.js thing
+	w.fbtypeahead = function(el, ref, onchange){
+		var options = [];
+
+		sub(ref, 'value', function(snap){
+			options = values(snap.val());
+		});
+
+		sub($(el.form), 'submit', function(ev){
+			ev.preventDefault();
+			onchange({ name: el.value, is_new: true });
+			$(el).typeahead('val', '');
+			return false;
+		});
+
+		sub($(el), 'typeahead:selected', function(ev, data){
+			onchange(data);
+			$(el).typeahead('val', '');
+		});
+
+		$(el).typeahead({autoselect:true}, {
+		  displayKey: 'name',
+		  source: function(query, cb){
+			var q = query && query.toLowerCase();
+			cb(options.filter(function(x){
+				return !query || x.name.toLowerCase().indexOf(q) >= 0;
+			}));
+		  }
+		});
 		$(el).typeahead('val', '');
-		return false;
-	});
+	};
 
-	sub($(el), 'typeahead:selected', function(ev, data){
-		onchange(data);
-		$(el).typeahead('val', '');
-	});
-
-	$(el).typeahead({autoselect:true}, {
-	  displayKey: 'name',
-	  source: function(query, cb){
-		var q = query && query.toLowerCase();
-		cb(options.filter(function(x){
-			return !query || x.name.toLowerCase().indexOf(q) >= 0;
-		}));
-	  }
-	});
-	$(el).typeahead('val', '');
-};
-
-firewidget.widgets.fbselect = function(el, ref, onchange){
-	sub(ref, 'value', function(snap){
-		var v = snap.val();
-		$(el).val(v);
-		if (onchange) onchange(v);
-	});
-	sub($(el), 'change', function(ev){
-		ref.set(this.value);
-		if (onchange) onchange(this.value);
-	});
-};
+})();

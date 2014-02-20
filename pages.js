@@ -20,30 +20,13 @@ $('#login').on('click', login);
 
 
 
-// set up lil page revealer
-
-function reveal(page, firewidgets){
-	$('.page').hide();
-	$('#'+page).show();
-	if (!firewidgets) return;
-	firewidget.close();
-	firewidget(firewidgets);
-}
-
-$('#goto_lifestyles_index').click(lifestyles_index);
-$('#goto_activities_index').click(activities_index);
-$('#goto_websites_index').click(websites_index);
-$('#goto_activities_graph').click(goto_activities_graph);
-
-
-
-
 // pages!
 
+var reveal = firewidget.reveal;
 
 function lifestyles_index() {
 	if (!firebase_user_id) return login();
-	reveal('lifestyles', {
+	reveal('.page', 'lifestyles', {
 		lifestyle_list: [fb('lifestyles'), function(data){
 			lifestyle_detail(data.id, data.name);
 		}],
@@ -56,7 +39,7 @@ function lifestyles_index() {
 
 function websites_index() {
 	if (!firebase_user_id) return login();
-	reveal('websites', {
+	reveal('.page', 'websites', {
 		website_list: [fb('websites'), function(data){
 			website_detail(data.id, data.name);
 		}],
@@ -69,7 +52,7 @@ function websites_index() {
 
 
 function lifestyle_detail(lid, name){
-	reveal('lifestyle', {
+	reveal('.page', 'lifestyle', {
 		lifestyle_name: name,
 		lifestyle_testimony: fb('users/'+firebase_user_id+'/lifestyles/'+lid+'/lived'),
 
@@ -104,7 +87,7 @@ function lifestyle_detail(lid, name){
 }
 
 function website_detail(wid, name){
-	reveal('website', {
+	reveal('.page', 'website', {
 		website_name: name,
 
 		website_activities_list: [fb('activities_by_website/'+wid), function(data){
@@ -121,7 +104,7 @@ function website_detail(wid, name){
 
 function activities_index() {
 	if (!firebase_user_id) return login();
-	reveal('activities', {
+	reveal('.page', 'activities', {
 		all_activities_list: [fb('activities'), function(data){
 			activity_detail(data.id, data.name);
 		}],
@@ -133,7 +116,7 @@ function activities_index() {
 
 function activity_detail(aid, name){
 	$('#relative_preferences').hide();
-	reveal('activity', {
+	reveal('.page', 'activity', {
 		activity_name: name,
 		activity_would: fb('users/'+firebase_user_id+'/activities/'+aid+'/would'),
 		activity_takes: fb('activities/'+aid+'/takes'),
