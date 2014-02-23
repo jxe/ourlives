@@ -1,24 +1,42 @@
-m2
-- mobile formatting
-- add "Tell us about YOU"
-- fix some kind of signin bug?
+- design day in the life
+- design reminder page with instagram pics, helpful link picker and dock installer...
 
-m3
-- activity reminder page, which lets you choose a quick link and an image and download a sand bookmark
+
+LATER
+
+- design Q&A for people
+
+
+
+
+- added links extract title of link page when it's not a root url
+- "I prefer this lifestyle" / "I prefer other lifestyles I've tried" -- only shows up if you've lived it
 - add instagram photos
 
 
-m3
-- "I prefer this lifestyle" / "I prefer other lifestyles I've tried" -- only shows up if you've lived it
-- fix fbphoto styling
-- add cities list and detail -- index cities_by_lifestyle
+
+PEOPLE PROFILES (Later)
+- Q&A
+- Later: day in the life
+
+
+m2
+
 
 
 ** send **
 
 
-m4
-- add identities to activity_detail
+
+m3
+- mobile formatting
+- activity reminder page, which lets you choose a quick link and an image and download a sand bookmark
+
+m3
+- lifestyle preference graph
+
+
+
 
 m6
 - style it better

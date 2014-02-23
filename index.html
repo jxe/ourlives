@@ -5,11 +5,23 @@
 	<br>
 	<button onclick="lifestyles_index()">Tell us about a lifestyle</button>
 	<button onclick="activities_index()">Tell us about an activity</button>
-	<button onclick="websites_index()">Tell us about a website</button>
+	<button onclick="links_index()">Tell us about a link</button>
+	<button onclick="cities_index()">Tell us about a city</button>
 	<button onclick="activities_graph()">Graph activities prefs</button>
+	<button onclick="about()">About</button>
 </h1>
 
 
+
+<div id="about" class="page" style="max-width: 500px; font-size: 14px; line-height: 1.4; color: #444; margin-left: 10px;">
+	<h2>About this site</h2>
+
+	<p>Our Lives is a calendar app, a database about how people have spent their time and which of it was well-spent, and a community site for living with satisfaction.
+
+	<p>Our mission is to organize all the links on the internet -- apps, videos, websites, products, etc -- by what activities they helped people with and whether people are glad they did those activities in the end.  We dream of an internet that leads to lives of satisfaction.
+
+	<p><b>Partners:</b>  We're looking for partners that have confirmed info about video watches, app downloads and usage, product purchases, etc.  We'd like to survey your users about how they feel about these engagements in the long run, and give the data back to you with annotations to make better recommendations.  Contact <a href="http://nxhx.org">Joe</a>.
+</div>
 
 
 <!-- index pages -->
@@ -25,13 +37,13 @@
 	</ul>
 </div>
 
-<div id="websites" class="page">
-	<h3>Choose a website you've spent time on, or add one...</h3>
+<div id="links" class="page">
+	<h3>Choose a link you've spent time on, or add one...</h3>
 	<ul>
-		<div id="website_list" class="fbobjlist">
-			<li data-set="text:name"></li>
+		<div id="links_list" class="fbobjlist">
+			<li><b data-set="text:name"></b> (<span data-set="text:type"></span>)</li>
 		</div>
-		<form><input placeholder="Add a website..." id="website_adder" class="simple_input"><input type="submit"></form>
+		<form><input placeholder="Add a link..." id="link_adder" class="simple_input"><input type="submit"></form>
 	</ul>
 </div>
 
@@ -45,7 +57,25 @@
 	</ul>
 </div>
 
+<div id="identities" class="page">
+	<h3>Choose something you are trying to be...</h3>
+	<ul>
+		<div  id="all_identities_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<form><input placeholder="I'm trying to be..." id="identity_adder" class="simple_input"><input class="submit" type="submit"></form>	
+	</ul>
+</div>
 
+<div id="cities" class="page">
+	<h3>Choose a city</h3>
+	<ul>
+		<div  id="all_cities_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<form><input placeholder="Another city..." id="city_adder" class="simple_input"><input class="submit" type="submit"></form>	
+	</ul>
+</div>
 
 
 <!-- detail pages -->
@@ -83,7 +113,7 @@
 		<div  id="cities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<form><input placeholder="Add a city..." id="city_adder" class="fbtypeahead"><input class="submit" type="submit"></form>
+		<form><input placeholder="Add a city..." id="lifestyle_city_adder" class="fbtypeahead"><input class="submit" type="submit"></form>
 	</ul>
 
 	<h3>These <b>people</b> have tried this lifestyle</h3>
@@ -151,32 +181,78 @@
 		<form><input placeholder="Add a lifestyle..." id="activity_lifestyles_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
 	</ul>
 
-
-	<h3>Websites that coordinate this activity</h3>
+	<h3>Links for this activity</h3>
 	<ul>
-		<div  id="activity_websites_list" class="fbobjlist">
+		<div  id="activity_links_list" class="fbobjlist">
+			<li><b data-set="text:name"></b> (<span data-set="text:type"></span>)</li>
+		</div>
+		<form><input placeholder="Add a link..." id="activity_link_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
+	</ul>
+
+	<h3>People do this because they're trying to be...</h3>
+	<ul>
+		<div  id="activity_identities_list" class="fbobjlist">
 			<li data-set="text:name"></li>			
 		</div>
-		<form><input placeholder="Add a lifestyle..." id="activity_websites_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
+		<form><input placeholder="trying to be..." id="activity_identities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
 	</ul>
-
 </div>
 
 
 
-<div id="website" class="page">
-	<h2 class="simple_label" id="website_name"></h3>
-	<h4>a website</h4>
+<div id="link" class="page">
+	<h2 class="simple_label" id="link_name"></h3>
+	<h4>a link</h4>
 
-	<h3>Activities this website coordinates</h3>
+	<h3>Activities this link is good for</h3>
 	<ul>
-		<div id="website_activities_list" class="fbobjlist">
+		<div id="link_activities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<form><input placeholder="Add an activity..." id="website_activity_adder" class="fbtypeahead"><input type="submit"></form>
+		<form><input placeholder="Add an activity..." id="link_activity_adder" class="fbtypeahead"><input type="submit"></form>
 	</ul>
 </div>
 
+<div id="identity" class="page">
+	<h2 class="simple_label" id="identity_name"></h3>
+	<h4>something people want to be</h4>
+
+	<h3>Activities people do who are trying to be this way</h3>
+	<ul>
+		<div id="identity_activities_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<form><input placeholder="Add an activity..." id="identity_activity_adder" class="fbtypeahead"><input type="submit"></form>
+	</ul>
+</div>
+
+
+<div id="city" class="page">
+	<h2 class="simple_label" id="city_name"></h3>
+	<h4>a city</h4>
+
+	<h3>Common lifestyles in this city</h3>
+	<ul>
+		<div id="city_lifestyles_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<form><input placeholder="Add a lifestyle..." id="city_lifestyle_adder" class="fbtypeahead"><input type="submit"></form>
+	</ul>
+</div>
+
+
+<div id="user" class="page">
+	<h2 class="simple_label" id="user_name"></h3>
+	<h4>a person</h4>
+
+	<h3>Lifestyles this person has lived</h3>
+	<ul>
+		<div id="user_lifestyles_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<form><input placeholder="Add a lifestyle..." id="user_lifestyle_adder" class="fbtypeahead"><input type="submit"></form>
+	</ul>
+</div>
 
 
 <!-- graphs -->

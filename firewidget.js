@@ -9,10 +9,10 @@
 (function(){
 	var subs = {}, sub_scope, domains = {};
 	window.firewidget = function(a, b){
-		if (!b) { for (var x in a) firewidget(x, a[x]); return; }
+		if (!a.trim) { for (var x in a) firewidget(x, a[x]); return; }
 		firewidget.unsub(sub_scope = a);
 		var el = document.getElementById(a) || document.querySelector(a) || alert(a + " not found.");
-		if (!b.sort) b = [b];
+		if (!b || !b.sort) b = [b];
 		for (var i = el.classList.length - 1; i >= 0; i--) {
 			var c = firewidget.widgets[ el.classList[i] ];
 			if (c) c(el, b[0], b[1], b[2], b[3], b[4]);
@@ -42,12 +42,10 @@
 			el.innerHTML = value;
 		},
 		simple_input: function(el, onchange){
-			firewidget.sub(el.form, 'submit', function(ev){ onchange(el.value); el.value = ''; return false; });
+			firewidget.sub(el.form, 'submit', function(ev){ onchange(el.value); ev.preventDefault(); el.value = ''; return false; });
 		}
 	};
 })();
-
-
 
 
 
@@ -137,11 +135,12 @@ function mikrotemplate(el, obj_or_array){
 
 		sub(ref, 'value', function(snap){
 			options = values(snap.val());
+			console.log(el.id, "typeahead got values", options);
 		});
 
 		sub($(el.form), 'submit', function(ev){
 			ev.preventDefault();
-			onchange({ name: el.value, is_new: true });
+			onchange({ name: el.value });
 			$(el).typeahead('val', '');
 			return false;
 		});
@@ -151,6 +150,7 @@ function mikrotemplate(el, obj_or_array){
 			$(el).typeahead('val', '');
 		});
 
+		$(el).typeahead('destroy');
 		$(el).typeahead({autoselect:true}, {
 		  displayKey: 'name',
 		  source: function(query, cb){

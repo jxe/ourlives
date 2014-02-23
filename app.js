@@ -9,15 +9,7 @@ var Firebase = require('firebase'),
 
 
 fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
-   var  F = new Firebase(fburl),
-        activities = F.child("activities"),
-        users = F.child("users"),
-        activities_by_lifestyle = F.child("activities_by_lifestyle"),
-        activities_by_desire    = F.child("activities_by_desire"),
-        activities_by_identity  = F.child("activities_by_identity"),
-        activities_by_city      = F.child("activities_by_city"),
-        activities_by_website   = F.child("activities_by_website"),
-        indexed = F.child("indexed");
+   var  F = new Firebase(fburl), indexed = F.child("indexed");
 
    function index(key, data, indexref, tags, also_unindex){
       var index_name = indexref.name();
@@ -41,54 +33,37 @@ fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
       }
    }
 
+   function observe_and_index(table_ref, map){
+      table_ref.on('child_added', function(snap){
+        var key = snap.name(), data = snap.val();
+        for (var attribute in map){
+           index(key, data, map[attribute], Object.keys(data[attribute]||{}), false);
+        }
+      });
+      table_ref.on('child_changed', function(snap){
+         var key = snap.name(), data = snap.val();
+         for (var attribute in map){
+           index(key, data, map[attribute], Object.keys(data[attribute]||{}), true);
+         }
+      }); 
+      table_ref.on('child_removed', function(snap){
+         var key = snap.name();
+         for (var attribute in map){
+            index(key, {}, map[attribute], [], true);
+         }
+      });
+   }
 
-
-   // users
-
-   users.on('child_added', function(snap){
-      var key = snap.name(), data = snap.val();
-      index(key, data, F.child("users_by_lifestyle"), Object.keys(data.lifestyles ||{}), false);
+   observe_and_index(F.child("users"), {
+      lifestyles: F.child("users_by_lifestyle")
    });
-
-   users.on('child_changed', function(snap){
-      var key = snap.name(), data = snap.val();
-      index(key, data, F.child("users_by_lifestyle"), Object.keys(data.lifestyles||{}), true);
+   observe_and_index(F.child("lifestyles"), {
+      cities: F.child("lifestyles_by_city")
    });
-
-   users.on('child_removed', function(snap){
-      var key = snap.name();
-      index(key, {}, F.child("users_by_lifestyle"), [], true);
-   });
-
-
-   // activities
-
-   activities.on('child_added', function(snap){
-      var key = snap.name(), data = snap.val();
-      index(key, data, activities_by_desire, data.desires || [], false);
-      index(key, data, activities_by_lifestyle, Object.keys(data.lifestyles ||{}), false);
-      index(key, data, activities_by_website, Object.keys(data.websites ||{}), false);
-      index(key, data, activities_by_identity, data.identities || [], false);
-      index(key, data, activities_by_city, data.cities || [], false);
-   });
-
-   activities.on('child_changed', function(snap){
-      var key = snap.name(), data = snap.val();
-      index(key, data, activities_by_desire, data.desires || [], true);
-      index(key, data, activities_by_lifestyle, Object.keys(data.lifestyles||{}) || [], true);
-      index(key, data, activities_by_website, Object.keys(data.websites||{}) || [], true);
-      index(key, data, activities_by_identity, data.identities || [], true);
-      index(key, data, activities_by_city, data.cities || [], true);
-   });
-
-   activities.on('child_removed', function(snap){
-      var key = snap.name();
-      index(key, {}, activities_by_desire, [], true);
-      index(key, {}, activities_by_lifestyle, [], true);
-      index(key, {}, activities_by_website, [], true);
-      index(key, {}, activities_by_identity, [], true);
-      index(key, {}, activities_by_city, [], true);
-      // itags.child(key).remove();
+   observe_and_index(F.child("activities"), {
+      lifestyles: F.child("activities_by_lifestyle"),
+      websites:   F.child("activities_by_website"),
+      identities: F.child("activities_by_identity")
    });
 
 
