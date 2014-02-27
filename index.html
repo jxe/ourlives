@@ -1,17 +1,16 @@
 <link rel="stylesheet" type="text/css" href="styles.css">
 <a style="float:right" href="#" id="login">FB login</a>
 <h1>
-	One Life:  collective wisdom about lifestyles and activities
+	One Life: collective wisdom about how to spend your time on earth
 	<br>
-	<button onclick="lifestyles_index()">Tell us about a lifestyle</button>
-	<button onclick="activities_index()">Tell us about an activity</button>
-	<button onclick="links_index()">Tell us about a link</button>
 	<button onclick="cities_index()">Tell us about a city</button>
+	<button onclick="identities_index()">Tell us about a goal</button>
+	<button onclick="activities_index()">Tell us about an activity</button>
+	<button onclick="links_index()">Tell us about a resource</button>
+	<button onclick="my_profile()">Profile</button>
 	<button onclick="activities_graph()">Graph activities prefs</button>
 	<button onclick="about()">About</button>
 </h1>
-
-
 
 <div id="about" class="page" style="max-width: 500px; font-size: 14px; line-height: 1.4; color: #444; margin-left: 10px;">
 	<h2>About this site</h2>
@@ -50,7 +49,7 @@
 </div>
 
 <div id="links" class="page">
-	<h3>Choose a link you've spent time on, or add one...</h3>
+	<h3>Choose a resource...</h3>
 	<ul>
 		<div id="links_list" class="fbobjlist">
 			<li><b data-set="text:name"></b> (<span data-set="text:type"></span>)</li>
@@ -70,12 +69,12 @@
 </div>
 
 <div id="identities" class="page">
-	<h3>Choose something you are trying to be...</h3>
+	<h3>Choose something you're into feeling...</h3>
 	<ul>
 		<div  id="all_identities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<form><input placeholder="I'm trying to be..." id="identity_adder" class="simple_input"><input class="submit" type="submit"></form>	
+		<form><input placeholder="I'm into feeling..." id="identity_adder" class="simple_input"><input class="submit" type="submit"></form>	
 	</ul>
 </div>
 
@@ -129,9 +128,7 @@
 	</ul>
 
 	<h3>These <b>people</b> have tried this lifestyle</h3>
-	<div id="users_list" class="fbobjlist">
-		<img data-set="src:fbphoto">
-	</div>
+	<div id="users_list" class="fbobjlist"> <img data-set="src:fbphoto"> </div>
 </div>
 
 
@@ -158,57 +155,26 @@
 		</select>
 		do this next week
 		</li>
-
-		<li>
-		I like this for
-		<select id="activity_time_desire" class="fbselect">
-			<option>Quiet time</option>
-			<option>Quality time with friends</option>
-			<option>Learning</option>
-			<option>Creative projects</option>
-			<option>Exercise</option>
-			<option>Fresh air</option>
-			<option>Escaping routine</option>
-			<option>Being of service</option>
-		</select>
-		</li>
 	</ul>
 
-	<div id="relative_preferences">
-		<h3>For <b id="relative_for_desire" class="simple_label"></b>, I recommend the following more than <b class="activity_name simple_label"></b></h3>
-		<ul>
-			<div  id="recommended_activities" class="fbobjlist">
-				<li data-set="text:name"></li>
-			</div>
-			<form><input placeholder="Add an activity..." id="recommended_activities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>
-		</ul>
-	</div>
-
-
-	<h3>Lifestyles that include this activity</h3>
+	<h3>People do this because they're into feeling...</h3>
 	<ul>
-		<div  id="activity_lifestyles_list" class="fbobjlist">
+		<div  id="activity_identities_list" class="fbobjlist">
 			<li data-set="text:name"></li>			
 		</div>
-		<form><input placeholder="Add a lifestyle..." id="activity_lifestyles_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
+		<form><input placeholder="into feeling..." id="activity_identities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
 	</ul>
 
-	<h3>Links for this activity</h3>
+	<h3>Resources for this activity</h3>
 	<ul>
 		<div  id="activity_links_list" class="fbobjlist">
 			<li><b data-set="text:name"></b> (<span data-set="text:type"></span>)</li>
 		</div>
 		<form><input placeholder="Add a link..." id="activity_link_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
 	</ul>
-
-	<h3>People do this because they're trying to be...</h3>
-	<ul>
-		<div  id="activity_identities_list" class="fbobjlist">
-			<li data-set="text:name"></li>			
-		</div>
-		<form><input placeholder="trying to be..." id="activity_identities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
-	</ul>
 </div>
+
+
 
 
 
@@ -225,11 +191,14 @@
 	</ul>
 </div>
 
+
+
+
 <div id="identity" class="page">
 	<h2 class="simple_label" id="identity_name"></h3>
-	<h4>something people want to be</h4>
+	<h4>something people are into feeling</h4>
 
-	<h3>Activities people do who are trying to be this way</h3>
+	<h3>Activities people do who are into feeling this way</h3>
 	<ul>
 		<div id="identity_activities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
@@ -243,12 +212,12 @@
 	<h2 class="simple_label" id="city_name"></h3>
 	<h4>a city</h4>
 
-	<h3>Common lifestyles in this city</h3>
+	<h3>People who live here are into feeling...</h3>
 	<ul>
-		<div id="city_lifestyles_list" class="fbobjlist">
+		<div id="city_identities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<form><input placeholder="Add a lifestyle..." id="city_lifestyle_adder" class="fbtypeahead"><input type="submit"></form>
+		<form><input placeholder="Add a goal..." id="city_identity_adder" class="fbtypeahead"><input type="submit"></form>
 	</ul>
 </div>
 
@@ -257,12 +226,28 @@
 	<h2 class="simple_label" id="user_name"></h3>
 	<h4>a person</h4>
 
-	<h3>Lifestyles this person has lived</h3>
+	<h3>Cities I've lived in</h3>
 	<ul>
-		<div id="user_lifestyles_list" class="fbobjlist">
+		<div id="user_cities_list" class="fbobjlist">
 			<li data-set="text:name"></li>
 		</div>
-		<form><input placeholder="Add a lifestyle..." id="user_lifestyle_adder" class="fbtypeahead"><input type="submit"></form>
+		<form><input placeholder="Add a goal..." id="user_cities_adder" class="fbtypeahead"><input type="submit"></form>
+	</ul>
+
+	<h3>Old identities</h3>
+	<ul>
+		<div id="user_old_goals_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<form><input placeholder="Add a goal..." id="user_old_goals_adder" class="fbtypeahead"><input type="submit"></form>
+	</ul>
+
+	<h3>New identities</h3>
+	<ul>
+		<div id="user_new_goals_list" class="fbobjlist">
+			<li data-set="text:name"></li>
+		</div>
+		<form><input placeholder="Add a goal..." id="user_new_goals_adder" class="fbtypeahead"><input type="submit"></form>
 	</ul>
 </div>
 
