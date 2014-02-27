@@ -3,12 +3,12 @@
 <h1>
 	One Life: collective wisdom about how to spend your time on earth
 	<br>
-	<button onclick="cities_index()">Tell us about a city</button>
-	<button onclick="identities_index()">Tell us about a goal</button>
-	<button onclick="activities_index()">Tell us about an activity</button>
-	<button onclick="links_index()">Tell us about a resource</button>
-	<button onclick="my_profile()">Profile</button>
-	<button onclick="activities_graph()">Graph activities prefs</button>
+	<button onclick="cities_index()">Cities</button>
+	<button onclick="identities_index()">Goals</button>
+	<button onclick="activities_index()">Activities</button>
+	<button onclick="links_index()">Resources</button>
+	<button onclick="my_profile()">You</button>
+	<button onclick="activities_graph()">Graphs</button>
 	<button onclick="about()">About</button>
 </h1>
 
@@ -21,7 +21,7 @@
 
 	<p><b>Partners:</b>  We're looking for partners that have confirmed info about video watches, app downloads and usage, product purchases, etc.  We'd like to survey your users about how they feel about these engagements in the long run, and give the data back to you with annotations to make better recommendations.  Contact <a href="http://nxhx.org">Joe</a>.
 
-	<p><b>Coverage Goals:</b>  our M1 goal for coverage in the English-speaking world is the following:
+	<p><b>M1 Coverage Goals:</b>  our M1 goal for coverage in the English-speaking world is the following:
 
 	<ul>
 		<li>1000 top websites x 100 users
@@ -31,7 +31,7 @@
 		<li>100 psychographics / sociographics / lifestyles
 	</ul>
 
-	<p>(*) If the average user rates 5 websites, 2 apps, 5 activities, or 5 venues, then ~20k reflective users will suffice.
+	<p>(*) If an average user rates 5 websites, 2 apps, 5 activities, or 5 venues, then ~20k reflective users will suffice.
 </div>
 
 
@@ -182,13 +182,27 @@
 	<h2 class="simple_label" id="link_name"></h3>
 	<h4>a link</h4>
 
-	<h3>Activities this link is good for</h3>
-	<ul>
-		<div id="link_activities_list" class="fbobjlist">
-			<li data-set="text:name"></li>
+	<h3>I use this resource for...</h3>
+	<select id="link_activity_chooser" class="fbselectlist">
+		<option data-set="value:id text:name"></option>
+	</select>
+	<form><input placeholder="Or another activity..." id="link_activity_adder" class="fbtypeahead"><input type="submit"></form>
+
+	<div id="link_activity_subpage" class="subpage" style="display:none">
+		<h3>and thus for feeling or being...</h3>
+		<ul>
+			<div  id="link_activity_identities_list" class="fbobjlist"> <li data-set="text:name"></li> </div>
+			<form><input placeholder="into feeling..." id="link_activity_identities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
+		</ul>
+
+		<h3>Recommended activities</h3>
+		<div id="recommended_activities" class="fbobjlist">
+			<li>
+				<b data-set="text:related_activity_name">Activity</b> &mdash;
+					better for <i data-set="text:name"></i>?
+			</li>
 		</div>
-		<form><input placeholder="Add an activity..." id="link_activity_adder" class="fbtypeahead"><input type="submit"></form>
-	</ul>
+	</div>
 </div>
 
 

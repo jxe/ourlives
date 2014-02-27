@@ -54,7 +54,7 @@
 
 // tinytemplate
 
-function mikrotemplate(el, obj_or_array){
+function mikrotemplate(el, obj_or_array, id_pfx){
 	function decorate_element(el, json){
 		var directives = el.getAttribute('data-set') ? el.getAttribute('data-set').split(' ') : [];
 		directives.forEach(function(word){
@@ -72,6 +72,7 @@ function mikrotemplate(el, obj_or_array){
 		var matches = el.querySelectorAll('[data-set]');
 		for (var i = 0; i < matches.length; i++) decorate_element(matches[i], json);
 	}
+	if (!id_pfx) id_pfx = '';
 	if (!obj_or_array) return;
 	if (!obj_or_array.forEach) return decorate_subtree(el, obj_or_array);
 	if (!mikrotemplate.templates) mikrotemplate.templates = {};
@@ -79,7 +80,7 @@ function mikrotemplate(el, obj_or_array){
 	el.innerHTML = "";
 	obj_or_array.forEach(function(o){
 		var clone = mikrotemplate.templates[el.id].cloneNode(true);
-		clone.id = o.id;
+		clone.id = id_pfx + o.id;
 		decorate_subtree(clone, o);
 		el.appendChild(clone);
 	});
@@ -100,17 +101,47 @@ function mikrotemplate(el, obj_or_array){
 		return Object.keys(obj).map(function(x){ obj[x].id = x; return obj[x]; });
 	}
 
-	w.fbobjlist = function(el, ref, onclick, calcfns){
+	w.fbobjlist = function(el, ref, onclick, calcfns, id_pfx){
+		if (!id_pfx) id_pfx = '';
 		sub(ref, 'value', function(snap){
 			var value = snap.val();
 			var array = value ? values(value) : [];
-			if (calcfns) array.forEach(function(o){ for (var k in calcfns) o[k] = calcfns[k](o); });
-			mikrotemplate(el, array);
+			if (calcfns) array.forEach(function(o){
+				for (var k in calcfns){
+					o[k] = calcfns[k](o, function(v){
+						var item = document.getElementById(id_pfx + o.id);
+						o[k] = v;
+						console.log(item, v, o);
+						mikrotemplate(item, o, id_pfx);
+					});
+				}
+			});
+			mikrotemplate(el, array, id_pfx);
 			if (!onclick) return;
 			var children = el.childNodes;
 			for (var i = children.length - 1; i >= 0; i--) {
-				children[i].onclick = function(){ onclick( this.data ); };			
+				children[i].onclick = function(ev){ onclick( this.data, ev, this ); };
 			}
+		});
+	};
+
+
+	w.fbselectlist = function(el, ref_selected, ref_options, onchange){
+		sub(ref_options, 'value', function(snap){
+			var value = snap.val();
+			var array = value ? values(value) : [];
+			mikrotemplate(el, array);
+
+			sub(ref_selected, 'value', function(snap){
+				var v = snap.val();
+				$(el).val(v);
+				if (onchange) onchange(v);
+			});			
+		});
+		sub($(el), 'change', function(ev){
+			if (!this.value) ref_selected.remove();
+			else ref_selected.set(this.value);
+			if (onchange) onchange(this.value);
 		});
 	};
 
@@ -156,7 +187,7 @@ function mikrotemplate(el, obj_or_array){
 		  source: function(query, cb){
 			var q = query && query.toLowerCase();
 			cb(options.filter(function(x){
-				return !query || x.name.toLowerCase().indexOf(q) >= 0;
+				return !query || (x.name&&x.name.toLowerCase().indexOf(q) >= 0);
 			}));
 		  }
 		});
