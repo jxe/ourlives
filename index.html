@@ -183,10 +183,11 @@
 	<h4>a link</h4>
 
 	<h3>I use this resource for...</h3>
-	<select id="link_activity_chooser" class="fbselectlist">
-		<option data-set="value:id text:name"></option>
-	</select>
-	<form><input placeholder="Or another activity..." id="link_activity_adder" class="fbtypeahead"><input type="submit"></form>
+	<form class="tablist">
+		<span id="link_activity_chooser" class="fbtablist"><b data-set="text:name"></b></span>
+		<input placeholder="add an activity" id="link_activity_adder" class="fbtypeahead">
+		<input type="submit">
+	</form>
 
 	<div id="link_activity_subpage" class="subpage" style="display:none">
 		<h3>and thus for feeling or being...</h3>
@@ -294,7 +295,7 @@
 <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
 <script src='https://cdn.firebase.com/v0/firebase.js'></script>
 <script src='https://cdn.firebase.com/js/simple-login/1.2.3/firebase-simple-login.js'></script>
-<script src="http://twitter.github.com/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
+<script src="typeahead.js"></script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="firewidget.js"></script>
 <script src="graph.js"></script>

@@ -126,6 +126,39 @@ function mikrotemplate(el, obj_or_array, id_pfx){
 	};
 
 
+
+	w.fbtablist = function(el, ref_options, ref_selected, onchange){
+		// if (!id_pfx) id_pfx = '';
+		function select_item(parent, child){
+			var prev_selected = parent.querySelectorAll('.selected');
+			Array.prototype.forEach.call(prev_selected, function(x){ x.setAttribute('class', ''); });
+			child.setAttribute('class', 'selected');			
+		}
+		sub(ref_options, 'value', function(snap){
+			var value = snap.val();
+			var array = value ? values(value) : [];
+			mikrotemplate(el, array);
+			var children = el.childNodes;
+			for (var i = children.length - 1; i >= 0; i--) {
+				children[i].onclick = function(ev){
+					select_item(el, this);
+					if (ref_selected) ref_selected.set(this.data);
+					if (onchange) onchange(this.data);
+				};
+			}
+			sub(ref_selected, 'value', function(snap){
+				var v = snap.val();
+				if (v){
+					var to_select = document.getElementById(v.id || v);
+					if (to_select) select_item(el, to_select);			
+				}
+				if (onchange) onchange(v);
+			});
+		});
+	};
+
+
+
 	w.fbselectlist = function(el, ref_selected, ref_options, onchange){
 		sub(ref_options, 'value', function(snap){
 			var value = snap.val();

@@ -1,19 +1,18 @@
 
 // set up firebase
-
-var facebook_id, firebase_user_id, F = new Firebase('https://lifestyles.firebaseio.com');
+var F = new Firebase('https://lifestyles.firebaseio.com');
+var facebook_id, firebase_user_id, on_auth, m;
 var auth = new FirebaseSimpleLogin(F, function(error, user) {
 	if (!user) return;
     firebase_user_id = user.uid;
-    facebook_id = user.id;
-    facebook_name = user.displayName;
-
+    facebook_id      = user.id;
+    facebook_name    = user.displayName;
 	F.child('users').child(user.uid).update({
 		name: user.displayName,
 		facebook_id: facebook_id
 	});
-
     $('#login').hide();
+    if (on_auth) on_auth();
 });
 function fb(){
 	var args = Array.prototype.slice.call(arguments);
@@ -23,8 +22,35 @@ function fb(){
 }
 function login(){ auth.login('facebook', { rememberMe: true }); }
 $('#login').on('click', login);
+if (m = window.location.hash.match(/user\/(.*)$/)){
+	console.log('matched!', m[1]);
+	on_auth = function(){ jump_to_user(m[1]); }
+} else if (m = window.location.hash.match(/url\/(.*)$/)){
+	console.log('matched!');
+	on_auth = function(){ jump_to_link(m[1]); }
+}
 
 
+function canonicalize_link(url){
+    if (!url) return;
+    if (url.match(/^http/)){
+    	// strip http(s?)
+	    var match = url.match(/:\/\/(.[^/]+)/);
+	    if (!match) return url;
+	    // and leading www.
+	    return (match[1]).replace('www.','');    	
+    } else {
+    	return url;
+    }
+}
+
+function encodeFirebasePath(path){
+	return encodeURIComponent(path).replace(/\./g, '%2E');
+}
+
+function id_for_link(url){
+	return encodeFirebasePath(canonicalize_link(url));
+}
 
 function guess_type_of_link(link){
 	if (link.name.match(/vimeo|youtube/)) return 'video';
@@ -48,7 +74,7 @@ function links_index() {
 			link_detail(data.id, data.name);
 		}, { type: guess_type_of_link }],
 		link_adder: function(name){
-			fb('websites').push({ name: name });
+			fb('websites').child(id_for_link(name)).update({ name: name });
 		}
 	});
 }
@@ -141,9 +167,8 @@ function link_detail(wid, name){
 	reveal('.page', 'link', {
 		link_name: name,
 
-		link_activity_chooser: [fb('users/%/links/%/activity', firebase_user_id, wid), fb('activities_by_website/%', wid), function(data){
-			console.log('chooser', data);
-			if (data) update_activity_subpage(data, data);
+		link_activity_chooser: [fb('activities_by_website/%', wid), fb('users/%/links/%/activity', firebase_user_id, wid), function(data){
+			if (data && data.id) update_activity_subpage(data.id, data.name);
 		}],
 
 		link_activity_adder: [fb('activities'), function(data){
@@ -182,7 +207,7 @@ function activity_detail(aid, name){
 			link_detail(data.id, data.name);
 		}, { type: guess_type_of_link }],
 		activity_link_adder: [fb('websites'), function(data){
-			if (!data.id) data.id = fb('websites').push(data).name();
+			if (!data.id) data.id = fb('websites').child(id_for_link(data.name)).set(data).name();
 			fb('activities/%/websites/%', aid, data.id).set(data);
 		}],
 		activity_identities_list: [fb('activities/%/identities', aid), function(data){
@@ -195,11 +220,12 @@ function activity_detail(aid, name){
 	});
 }
 
-function my_profile(){ user_detail(facebook_id, facebook_name); }
+function my_profile(){ user_detail(firebase_user_id, facebook_name); }
 
 function user_detail(uid, name){
-	if (uid == firebase_user_id) $('#user_lifestyle_adder').show();
-	else $('#user_lifestyle_adder').hide();
+	console.log('user_detail', uid, name);
+	// if (uid == firebase_user_id) $('#user_lifestyle_adder').show();
+	// else $('#user_lifestyle_adder').hide();
 	reveal('.page', 'user', {
 		user_name: name,
 
@@ -227,4 +253,19 @@ function user_detail(uid, name){
 			fb('users/%/new_identities/%', uid, data.id).set(data);
 		}]
 	});	
+}
+
+
+// jump
+
+function jump_to_user(uid){
+	fb('users/%', uid).once('value', function(snap){
+		var data = snap.val();
+		user_detail(uid, data.name);
+	});
+}
+
+function jump_to_link(link){
+	var raw_link = decodeURIComponent(link);
+	link_detail(encodeFirebasePath(link), raw_link);
 }

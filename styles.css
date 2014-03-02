@@ -1,3 +1,12 @@
+.fbtablist b {
+  padding: 4px;
+  border-radius: 5px;
+  background: #ccc;
+  margin: 2px 5px;
+}
+.fbtablist b.selected { background: #ccf; }
+
+
 .page { display: none; padding: 6px 22px; }
 #game { max-width: 400; margin: 5px 10px ; padding: 10px; background: #ddd; border-radius: 5px; float: left; }
 #summary { max-width: 400; margin: 5px 10px ; padding: 10px; background: #ddd; border-radius: 5px; float: left; font-size: 12px; }
@@ -70,6 +79,11 @@ font-variant: small-caps;
 color: #999;
 font-size: 14px;
 }
+
+
+
+
+
 .fbtypeahead,
 .tt-query,
 .tt-hint {
@@ -84,6 +98,13 @@ font-size: 14px;
           border-radius: 8px;
   outline: none;
 }
+
+.tablist .fbtypeahead,
+.tablist .tt-query,
+.tablist .tt-hint {
+  width: 150px;
+}
+
 
 .fbtypeahead {
   background-color: #fff;
