@@ -22,12 +22,11 @@ function fb(){
 }
 function login(){ auth.login('facebook', { rememberMe: true }); }
 $('#login').on('click', login);
-if (m = window.location.hash.match(/user\/(.*)$/)){
-	console.log('matched!', m[1]);
-	on_auth = function(){ jump_to_user(m[1]); }
-} else if (m = window.location.hash.match(/url\/(.*)$/)){
-	console.log('matched!');
-	on_auth = function(){ jump_to_link(m[1]); }
+
+function with_user(cb){
+	if (firebase_user_id) return cb();
+	on_auth = cb;
+	login();
 }
 
 
@@ -53,15 +52,16 @@ function id_for_link(url){
 }
 
 function guess_type_of_link(link){
-	if (link.name.match(/vimeo|youtube/)) return 'video';
-	else if (link.name.match(/itunes|play/)) return 'app';
-	else return 'website';
+	if (!link) return '';
+	if (link.name.match(/vimeo|youtube/)) return 'a video';
+	else if (link.name.match(/itunes|play/)) return 'an app';
+	else return 'a website';
 }
 
 
 // pages!
 
-var reveal = firewidget.reveal;
+window.reveal = firewidget.reveal;
 
 function about() { reveal('.page', 'about'); };
 
@@ -74,7 +74,9 @@ function links_index() {
 			link_detail(data.id, data.name);
 		}, { type: guess_type_of_link }],
 		link_adder: function(name){
-			fb('websites').child(id_for_link(name)).update({ name: name });
+			with_user(function(){
+				fb('websites').child(id_for_link(name)).update({ name: name });
+			})
 		}
 	});
 }
@@ -134,12 +136,15 @@ function link_detail(wid, name){
 	function update_activity_subpage(aid, aname){
 		console.log('loading subpage', aid, aname);
 		reveal('.subpage', 'link_activity_subpage', {
+			link_activity_subpage_label: aname,
 			link_activity_identities_list: [fb('activities/%/identities', aid), function(data){
 				identity_detail(data.id, data.name);
 			}],
 			link_activity_identities_adder: [fb('identities'), function(data){
-				if (!data.id) data.id = fb('identities').push(data).name();
-				fb('activities/%/identities/%', aid, data.id).set(data);
+				with_user(function(){
+					if (!data.id) data.id = fb('identities').push(data).name();
+					fb('activities/%/identities/%', aid, data.id).set(data);
+				});
 			}],
 
 			recommended_activities: [fb('activities/%/identities', aid), function(data, ev){
@@ -166,16 +171,20 @@ function link_detail(wid, name){
 
 	reveal('.page', 'link', {
 		link_name: name,
+		link_name_again: name,
+		link_type: guess_type_of_link({name:name}),
 
 		link_activity_chooser: [fb('activities_by_website/%', wid), fb('users/%/links/%/activity', firebase_user_id, wid), function(data){
 			if (data && data.id) update_activity_subpage(data.id, data.name);
 		}],
 
 		link_activity_adder: [fb('activities'), function(data){
-			if (!data.id) data.id = fb('activities').push(data).name();
-			fb('activities/%/websites/%', data.id, wid).set({ name: name });
-			fb('users/%/links/%/activity', firebase_user_id, wid).set(data.id);
-			update_activity_subpage(data.id, data.name);
+			with_user(function(){
+				if (!data.id) data.id = fb('activities').push(data).name();
+				fb('activities/%/websites/%', data.id, wid).set({ name: name });
+				fb('users/%/links/%/activity', firebase_user_id, wid).set(data.id);
+				update_activity_subpage(data.id, data.name);
+			});
 		}]
 	});
 }
@@ -252,7 +261,7 @@ function user_detail(uid, name){
 			if (!data.id) data.id = fb('identities').push(data).name();
 			fb('users/%/new_identities/%', uid, data.id).set(data);
 		}]
-	});	
+	});
 }
 
 
@@ -261,11 +270,23 @@ function user_detail(uid, name){
 function jump_to_user(uid){
 	fb('users/%', uid).once('value', function(snap){
 		var data = snap.val();
-		user_detail(uid, data.name);
+		if (data) user_detail(uid, data.name);
 	});
 }
 
 function jump_to_link(link){
 	var raw_link = decodeURIComponent(link);
 	link_detail(encodeFirebasePath(link), raw_link);
+}
+
+
+
+if (m = window.location.hash.match(/user\/(.*)$/)){
+	console.log('matched!', m[1]);
+	// on_auth = function(){ jump_to_user(m[1]); }
+	jump_to_user(m[1]);
+} else if (m = window.location.hash.match(/url\/(.*)$/)){
+	console.log('matched!');
+	// on_auth = function(){ jump_to_link(m[1]); }
+	jump_to_link(m[1]);
 }

@@ -128,7 +128,7 @@ function mikrotemplate(el, obj_or_array, id_pfx){
 
 
 	w.fbtablist = function(el, ref_options, ref_selected, onchange){
-		// if (!id_pfx) id_pfx = '';
+		var last_value;
 		function select_item(parent, child){
 			var prev_selected = parent.querySelectorAll('.selected');
 			Array.prototype.forEach.call(prev_selected, function(x){ x.setAttribute('class', ''); });
@@ -142,6 +142,7 @@ function mikrotemplate(el, obj_or_array, id_pfx){
 			for (var i = children.length - 1; i >= 0; i--) {
 				children[i].onclick = function(ev){
 					select_item(el, this);
+					last_value = this.data;
 					if (ref_selected) ref_selected.set(this.data);
 					if (onchange) onchange(this.data);
 				};
@@ -152,7 +153,7 @@ function mikrotemplate(el, obj_or_array, id_pfx){
 					var to_select = document.getElementById(v.id || v);
 					if (to_select) select_item(el, to_select);			
 				}
-				if (onchange) onchange(v);
+				if (onchange && last_value != v) onchange(v);
 			});
 		});
 	};
