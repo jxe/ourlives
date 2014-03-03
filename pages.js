@@ -29,6 +29,26 @@ function with_user(cb){
 	login();
 }
 
+function with_page_info(url, cb){
+	$.ajax({
+	      url: "/url/" + encodeURIComponent(url),
+	      dataType: 'json',
+	      success: function(data) {
+	      	console.log('got data: ', data);
+		  	cb(url, data.title, data.title);
+	      }
+	});
+
+	// $.ajax({
+	//   url: url,
+	//   dataType: 'html',
+	//   success: function(data){
+	//   	var title = data.getElementByTagName('title').innerText;
+	//   	cb(url, title, title);
+	//   }
+	// });
+}
+
 
 function canonicalize_link(url){
     if (!url) return;
@@ -51,10 +71,13 @@ function id_for_link(url){
 	return encodeFirebasePath(canonicalize_link(url));
 }
 
-function guess_type_of_link(link){
-	if (!link) return '';
-	if (link.name.match(/vimeo|youtube/)) return 'a video';
-	else if (link.name.match(/itunes|play/)) return 'an app';
+function guess_type_of_link(data){
+	if (!data) return '';
+	var link = data.url || data.name || data;
+	if (link.match(/vimeo|youtube/)) return 'a video';
+	else if (link.match(/itunes|play/)) return 'an app';
+	else if (link.match(/amazon|stripe|square|etsy|groupon/)) return 'a product';
+	else if (link.match(/yelp|foursquare/)) return 'a venue';
 	else return 'a website';
 }
 
@@ -63,9 +86,9 @@ function guess_type_of_link(link){
 
 window.reveal = firewidget.reveal;
 
-function about() { reveal('.page', 'about'); };
 
 
+// indexes
 
 function links_index() {
 	if (!firebase_user_id) return login();
@@ -75,35 +98,14 @@ function links_index() {
 		}, { type: guess_type_of_link }],
 		link_adder: function(name){
 			with_user(function(){
-				fb('websites').child(id_for_link(name)).update({ name: name });
-			})
+				with_page_info(name, function(url, short_title, full_title){
+					fb('websites').child(id_for_link(url)).update({ url: url, name: short_title, title: full_title });
+				});
+			});
 		}
 	});
 }
 
-function activities_index() {
-	if (!firebase_user_id) return login();
-	reveal('.page', 'activities', {
-		all_activities_list: [fb('activities'), function(data){
-			activity_detail(data.id, data.name);
-		}],
-		all_activity_adder: function(name){
-			fb('activities').push({ name: name });
-		}
-	});
-}
-
-function identities_index() {
-	if (!firebase_user_id) return login();
-	reveal('.page', 'identities', {
-		all_identities_list: [fb('identities'), function(data){
-			identity_detail(data.id, data.name);
-		}],
-		identity_adder: function(name){
-			fb('identities').push({ name: name });
-		}
-	});
-}
 
 function cities_index() {
 	if (!firebase_user_id) return login();
@@ -117,6 +119,11 @@ function cities_index() {
 	});
 }
 
+
+
+
+// detail pages
+
 function city_detail(cid, name){
 	reveal('.page', 'city', {
 		city_name: name,
@@ -127,6 +134,10 @@ function city_detail(cid, name){
 		city_identity_adder: [fb('identities'), function(data){
 			if (!data.id) data.id = fb('identities').push(data).name();
 			fb('cities/'+cid+'/identities/'+data.id).set({ name: data.name });
+		}],
+
+		city_users_list:  [fb('users_by_city/'+cid), function(data){
+			user_detail(data.id, data.name);
 		}]
 	});
 }
@@ -172,7 +183,7 @@ function link_detail(wid, name){
 	reveal('.page', 'link', {
 		link_name: name,
 		link_name_again: name,
-		link_type: guess_type_of_link({name:name}),
+		link_type: guess_type_of_link({url: decodeURIComponent(wid), name:name}),
 
 		link_activity_chooser: [fb('activities_by_website/%', wid), fb('users/%/links/%/activity', firebase_user_id, wid), function(data){
 			if (data && data.id) update_activity_subpage(data.id, data.name);
@@ -201,6 +212,14 @@ function identity_detail(iid, name){
 		identity_activity_adder: [fb('activities'), function(data){
 			if (!data.id) data.id = fb('activities').push(data).name();
 			fb('activities/'+data.id+'/identities/'+iid).set({ name: name });
+		}],
+
+		identity_old_users_list: [fb('users_by_old_goal/'+iid), function(data){
+			user_detail(data.id, data.name);
+		}],
+
+		identity_current_users_list: [fb('users_by_new_goal/'+iid), function(data){
+			user_detail(data.id, data.name);
 		}]
 	});
 }
@@ -228,8 +247,6 @@ function activity_detail(aid, name){
 		}]
 	});
 }
-
-function my_profile(){ user_detail(firebase_user_id, facebook_name); }
 
 function user_detail(uid, name){
 	console.log('user_detail', uid, name);
@@ -265,7 +282,13 @@ function user_detail(uid, name){
 }
 
 
-// jump
+
+
+// jumpers
+
+function about() { reveal('.page', 'about'); };
+
+function my_profile(){ user_detail(firebase_user_id, facebook_name); }
 
 function jump_to_user(uid){
 	fb('users/%', uid).once('value', function(snap){
@@ -280,6 +303,8 @@ function jump_to_link(link){
 }
 
 
+
+// jump from URL
 
 if (m = window.location.hash.match(/user\/(.*)$/)){
 	console.log('matched!', m[1]);

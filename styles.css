@@ -9,6 +9,7 @@
   font-size: 14px;
   box-shadow: black 0px 0px 5px;
   cursor: pointer;
+  line-height: 30px;
 }
 .taglist b:hover {
   background: #a3a2a2;
@@ -16,9 +17,8 @@
 .taglist b.selected { background: #006383; }
 
 
-#link h3, #user h3 {
-  margin-top: 30px;
-  margin-bottom: 0px;
+#nav {
+  padding-top: 5px;
 }
 
 .page { display: none; padding: 6px 22px; }
@@ -71,6 +71,14 @@ h1 {
 	background-color: #474747;
 	padding: 10px;
   margin:0;
+  font-weight: normal;
+}
+
+h1 b {
+  font-size: 22px;
+  font-family: Optima;
+  color: white;
+  margin-right: 10px;
 }
 
 h2 {
@@ -80,10 +88,12 @@ h2 {
 }
 
 h3 {
-	/*text-align: center;*/
 	font-size: 18px;
   margin: 10px 0px;
   font-weight: normal;
+  margin-top: 30px;
+  margin-bottom: 0px;
+  color: #9B9B9B;
 }
 
 h4 {

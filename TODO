@@ -1,3 +1,18 @@
+- Fetch titles of pages when you give a URL and fail resource add if URL doesn't load
+
+- import a product and a venue to show what I mean
+
+
+
+
+
+write patrick, etc
+
+I’ve changed http://ourlives.herokuapp.com/ quite a bit.  I think it’s almost usable on desktop now.  I actually got rid of time desires, and I’m just using identity desires for now.  Make sure to check it out on github https://github.com/jxe/ourlives.  It also now supports some nifty direct urls.  For instance, my profile:  http://ourlives.herokuapp.com/#user/facebook:514190  and about facebook.com:  http://ourlives.herokuapp.com/#url/facebook.com
+
+Note that the “alternatives” doesn’t even take into account the value dag or reviews yet, it just pulls the first activity listed under each goal.
+
+
 
 - design day in the life
 - design reminder page with instagram pics, helpful link picker and dock installer...

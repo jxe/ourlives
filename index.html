@@ -1,13 +1,14 @@
 <link rel="stylesheet" type="text/css" href="styles.css">
 <a style="float:right; color: #82E5E9;" href="#" id="login">FB login</a>
 <h1>
-	One Life: collective wisdom about how we've spent our time on earth
-	<br>
-	<button onclick="cities_index()">Cities</button>
-	<button onclick="links_index()">Resources</button>
-	<button onclick="my_profile()">My profile</button>
-	<button onclick="activities_graph()">Graphs</button>
-	<button onclick="about()">About</button>
+	<b>One Life Left</b> collective wisdom about our time and what to do with it
+	<div id="nav">
+		<button onclick="my_profile()">My profile</button>
+		<button onclick="links_index()">Resources</button>
+		<button onclick="cities_index()">Cities</button>
+		<button onclick="activities_graph()">Graphs</button>
+		<button onclick="about()">About</button>		
+	</div>
 </h1>
 
 <div id="about" class="page" style="max-width: 500px; font-size: 14px; line-height: 1.4; color: #444; margin-left: 10px;">
@@ -47,7 +48,7 @@
 </div>
 
 <div id="links" class="page">
-	<h3>Choose a website, app, video, or venue:</h3>
+	<h3>Choose a website, app, product, video, venue, etc:</h3>
 	<ul>
 		<div id="links_list" class="fbobjlist">
 			<li><b data-set="text:name"></b> (<span data-set="text:type"></span>)</li>
@@ -156,12 +157,11 @@
 	</ul>
 
 	<h3>People do this because they're into feeling...</h3>
-	<ul>
-		<div  id="activity_identities_list" class="fbobjlist">
-			<li data-set="text:name"></li>			
-		</div>
-		<form><input placeholder="into feeling..." id="activity_identities_adder" class="fbtypeahead"><input class="submit" type="submit"></form>	
-	</ul>
+	<form class="taglist">
+		<span  id="activity_identities_list" class="fbobjlist"> <b data-set="text:name"></b> </span>
+		<input placeholder="add a feeling..." id="activity_identities_adder" class="fbtypeahead">
+		<input class="submit" type="submit">
+	</form>
 
 	<h3>Resources for this activity</h3>
 	<ul>
@@ -188,7 +188,7 @@
 	</form>
 
 	<div id="link_activity_subpage" class="subpage" style="display:none">
-		<h3>When we're <b id="link_activity_subpage_label" class="simple_label"></b>, we want to be/feel:</h3>
+		<h3>Some things we want to be/feel when we're <b id="link_activity_subpage_label" class="simple_label"></b>:</h3>
 		<form class="taglist">
 			<span id="link_activity_identities_list" class="fbobjlist"> <b data-set="text:name"></b> </span>
 			<input placeholder="add a feeling" id="link_activity_identities_adder" class="fbtypeahead">
@@ -198,7 +198,7 @@
 		<h3>Alternatives</h3>
 		<ul id="recommended_activities" class="fbobjlist">
 			<li>
-				For feeling <i data-set="text:name"></i>, also try <b data-set="text:related_activity_name">Activity</b>
+				For being <i data-set="text:name"></i>, also try <b data-set="text:related_activity_name">Activity</b>
 			</li>
 		</ul>
 	</div>
@@ -218,6 +218,16 @@
 		</div>
 		<form><input placeholder="Add an activity..." id="identity_activity_adder" class="fbtypeahead"><input type="submit"></form>
 	</ul>
+
+	<h3>Users that used to be after this</h3>
+	<ul id="identity_old_users_list" class="fbobjlist">
+		<li data-set="text:name"></li>
+	</ul>
+
+	<h3>Users that are currently after this</h3>
+	<ul id="identity_current_users_list" class="fbobjlist">
+		<li data-set="text:name"></li>
+	</ul>	
 </div>
 
 
@@ -226,12 +236,17 @@
 	<h4>a city</h4>
 
 	<h3>People who live here are into feeling...</h3>
-	<ul>
-		<div id="city_identities_list" class="fbobjlist">
-			<li data-set="text:name"></li>
-		</div>
-		<form><input placeholder="Add a goal..." id="city_identity_adder" class="fbtypeahead"><input type="submit"></form>
-	</ul>
+	<form class="taglist">
+		<span id="city_identities_list" class="fbobjlist">
+			<b data-set="text:name"></b>
+		</span>
+		<input placeholder="Add a goal..." id="city_identity_adder" class="fbtypeahead"><input type="submit">
+	</form>
+
+	<h3>People who've lived here</h3>
+	<ul id="city_users_list" class="fbobjlist">
+		<li data-set="text:name"></li>
+	</ul>	
 </div>
 
 
@@ -239,7 +254,7 @@
 	<h2 class="simple_label" id="user_name"></h3>
 	<h4>a person</h4>
 
-	<h3>Cities I've lived in</h3>
+	<h3>Cities lived in</h3>
 	<form class="taglist">
 		<span id="user_cities_list" class="fbobjlist">
 			<b data-set="text:name"></b>
@@ -247,7 +262,7 @@
 		<input placeholder="Add a city..." id="user_cities_adder" class="fbtypeahead"><input type="submit">
 	</form>
 
-	<h3>I used to want to be</h3>
+	<h3>Used to want to be</h3>
 	<form class="taglist">
 		<span id="user_old_goals_list" class="fbobjlist">
 			<b data-set="text:name"></b>
@@ -255,7 +270,7 @@
 		<input placeholder="Add a goal..." id="user_old_goals_adder" class="fbtypeahead"><input type="submit">
 	</form>
 
-	<h3>But now I want to be</h3>
+	<h3>Now wants to be</h3>
 	<form class="taglist">
 		<span id="user_new_goals_list" class="fbobjlist">
 			<b data-set="text:name"></b>

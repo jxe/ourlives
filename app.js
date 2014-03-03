@@ -2,6 +2,7 @@
 require('newrelic');
 
 var Firebase = require('firebase'),
+    http   = require('http'),
     fbutil   = require('./fbutil'),
     fburl = 'https://' + process.env.FB_NAME + '.firebaseio.com/',
     express = require('express'),
@@ -55,7 +56,10 @@ fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
    }
 
    observe_and_index(F.child("users"), {
-      lifestyles: F.child("users_by_lifestyle")
+      lifestyles: F.child("users_by_lifestyle"),
+      new_identities: F.child("users_by_new_goal"),
+      old_identities: F.child("users_by_old_goal"),
+      cities: F.child("users_by_city")
    });
    observe_and_index(F.child("lifestyles"), {
       cities: F.child("lifestyles_by_city")
@@ -72,6 +76,24 @@ fbutil.auth(fburl, process.env.FB_TOKEN).done(function() {
    app.use(express.logger());
    app.use(express.static(__dirname));
    app.use(express.bodyParser());
+
+   app.get('/url/:url', function(req, res){
+      http.get(req.params.url, function(httpres) {
+        console.log("Got response: " + httpres.statusCode);
+        httpres.setEncoding('utf8');
+        httpres.on('data', function (chunk) {
+          var m = chunk.match(/<title>(.*)<\/title>/);
+          if (m){
+            res.send(JSON.stringify({
+              url: req.params.url,
+              title: m[1]
+            }));            
+          }
+        });
+      }).on('error', function(e) {
+        console.log("Got error: " + e.message);
+      });
+   });
 
    // app.post('/:id/ping', function(req, res){
    //    if (req.body.did == 'scheduled'){
