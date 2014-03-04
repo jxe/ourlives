@@ -94,6 +94,11 @@ h3 {
   margin-top: 30px;
   margin-bottom: 0px;
   color: #9B9B9B;
+  color: #6F6F6F;
+}
+
+h3 i, i.ii{
+  font-variant:small-caps; margin-left:10px; color:#777;
 }
 
 h4 {
@@ -105,6 +110,14 @@ font-size: 14px;
 }
 
 
+ul.light {
+  color: #646464 
+}
+
+ul.light > li {
+  margin:10px;
+}
+
 
 
 
@@ -114,9 +127,9 @@ font-size: 14px;
   width: 396px;
   height: 30px;
   padding: 8px 12px;
-  font-size: 15px;
+  font-size: 12px;
   /*line-height: 30px;*/
-  border: 2px solid #ccc;
+  border: 2px solid #F0F0F0;
   -webkit-border-radius: 8px;
      -moz-border-radius: 8px;
           border-radius: 8px;

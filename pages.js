@@ -147,7 +147,7 @@ function link_detail(wid, name){
 	function update_activity_subpage(aid, aname){
 		console.log('loading subpage', aid, aname);
 		reveal('.subpage', 'link_activity_subpage', {
-			link_activity_subpage_label: aname,
+			'.link_activity_subpage_label': aname,
 			link_activity_identities_list: [fb('activities/%/identities', aid), function(data){
 				identity_detail(data.id, data.name);
 			}],
@@ -157,6 +157,8 @@ function link_detail(wid, name){
 					fb('activities/%/identities/%', aid, data.id).set(data);
 				});
 			}],
+
+			link_activity_good_resource: fb('users/%/resource/%/activity/%/recommends', firebase_user_id, wid, aid),
 
 			recommended_activities: [fb('activities/%/identities', aid), function(data, ev){
 				console.log(ev.target.tagName);
@@ -181,8 +183,7 @@ function link_detail(wid, name){
 	}
 
 	reveal('.page', 'link', {
-		link_name: name,
-		link_name_again: name,
+		'.link_name': name,
 		link_type: guess_type_of_link({url: decodeURIComponent(wid), name:name}),
 
 		link_activity_chooser: [fb('activities_by_website/%', wid), fb('users/%/links/%/activity', firebase_user_id, wid), function(data){

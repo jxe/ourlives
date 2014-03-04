@@ -11,11 +11,15 @@
 	window.firewidget = function(a, b){
 		if (!a.trim) { for (var x in a) firewidget(x, a[x]); return; }
 		firewidget.unsub(sub_scope = a);
-		var el = document.getElementById(a) || document.querySelector(a) || alert(a + " not found.");
+		var els = document.getElementById(a) || document.querySelectorAll(a) || alert(a + " not found.");
 		if (!b || !b.sort) b = [b];
-		for (var i = el.classList.length - 1; i >= 0; i--) {
-			var c = firewidget.widgets[ el.classList[i] ];
-			if (c) c(el, b[0], b[1], b[2], b[3], b[4]);
+		if (!els.length) els = [els];
+		for (var el_i = els.length - 1; el_i >= 0; el_i--) {
+			var el = els[el_i];
+			for (var i = el.classList.length - 1; i >= 0; i--) {
+				var c = firewidget.widgets[ el.classList[i] ];
+				if (c) c(el, b[0], b[1], b[2], b[3], b[4]);
+			};
 		};
 	};
 	firewidget.sub = function(ref, ev, f){
